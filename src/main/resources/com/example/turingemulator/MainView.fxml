@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<GridPane fx:id="gridPane" minHeight="335.0" minWidth="530.0" prefHeight="745.0" prefWidth="624.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.turingemulator.MainView">
+    <fx:define>
+        <ToggleGroup fx:id="Colours" />
+    </fx:define>
+    <HBox GridPane.RowSpan="1" GridPane.columnIndex="0" GridPane.columnSpan="7" GridPane.rowIndex="0">
+        <MenuBar fx:id="bar" minWidth="530" prefHeight="25.0" prefWidth="628.0">
+            <Menu fx:id="file" text="Файл">
+                <Menu fx:id="newFile" text="Новый файл">
+                    <MenuItem fx:id="newFileLineMenu" text="Лента">
+                    </MenuItem>
+                    <MenuItem fx:id="newFileAlgorithmMenu" text="Алгоритм">
+                    </MenuItem>
+                </Menu>
+                <Menu fx:id="open" text="Открыть">
+                    <Menu fx:id="includeAlgorithmMenu" text="Встроенные алгоритмы">
+                        <MenuItem fx:id="plusMenu" text="Сложение">
+                        </MenuItem>
+                        <MenuItem fx:id="NODMenu" text="НОД">
+                        </MenuItem>
+                    </Menu>
+                    <MenuItem fx:id="fileIncludeMenu" text="Файл">
+                    </MenuItem>
+                </Menu>
+                <Menu fx:id="save" text="Сохранить">
+                    <MenuItem fx:id="saveLineMenu" text="Лента">
+                    </MenuItem>
+                    <MenuItem fx:id="saveAlgorithmMenu" text="Алгоритм">
+                    </MenuItem>
+                </Menu>
+            </Menu>
+            <Menu text="Информация">
+                <MenuItem fx:id="infoAboutSystemMenu" text="Сведения о системе">
+                </MenuItem>
+                <MenuItem fx:id="aboutProgramMenuItem" text="О программе">
+                </MenuItem>
+            </Menu>
+            <Menu fx:id="optionsMenu" text="Настройки">
+                <RadioMenuItem fx:id="checkerOn" selected="true" text="Включить семантическую проверку" />
+                <RadioMenuItem fx:id="checkerOff" text="Выключить семантическую проверку" />
+            </Menu>
+        </MenuBar>
+    </HBox>
+    <HBox maxHeight="125" GridPane.RowSpan="1" GridPane.columnIndex="0" GridPane.columnSpan="7" GridPane.rowIndex="1">
+        <VBox prefHeight="120.0" prefWidth="624.0">
+
+            <Label prefHeight="28.0" prefWidth="74.0" text="Лента">
+                <VBox.margin>
+                    <Insets left="1.0" right="25.0" />
+                </VBox.margin>
+                <padding>
+                    <Insets left="17.0" top="15.0" />
+                </padding>
+            </Label>
+            <ScrollPane fitToHeight="true" prefHeight="63.0" prefWidth="468.0">
+                <TableView fx:id="lentTable" editable="true" minHeight="48" prefWidth="6030.0">
+                    <columns>
+
+                    </columns>
+                </TableView>
+            </ScrollPane>
+            <padding>
+                <Insets bottom="15.0" />
+            </padding>
+        </VBox>
+    </HBox>
+    <HBox GridPane.RowSpan="1" GridPane.columnIndex="0" GridPane.columnSpan="7" GridPane.rowIndex="2">
+        <VBox prefHeight="272.0" prefWidth="628.0">
+            <Label alignment="CENTER" prefHeight="38.0" prefWidth="118.0">Карта состояний</Label>
+            <ScrollPane fitToHeight="true">
+                <TableView fx:id="mapConditionTable" editable="true" prefHeight="160.0" prefWidth="1532.0">
+                    <columns>
+                    </columns>
+                </TableView>
+            </ScrollPane>
+            <padding>
+                <Insets bottom="35" />
+            </padding>
+        </VBox>
+    </HBox>
+    <HBox prefHeight="153.0" prefWidth="624.0" GridPane.RowSpan="1" GridPane.columnIndex="0" GridPane.columnSpan="7" GridPane.rowIndex="3">
+        <VBox>
+            <Label>Режимы работы</Label>
+            <HBox>
+                <VBox prefHeight="80.0" prefWidth="128.0">
+                    <RadioButton fx:id="step" selected="true">Пошаговый</RadioButton>
+                    <RadioButton fx:id="auto">Автоматически</RadioButton>
+                    <RadioButton fx:id="onlyResult">Только результат</RadioButton>
+                </VBox>
+                <VBox>
+                    <padding>
+                        <Insets bottom="10" />
+                    </padding>
+                    <Label prefHeight="32.0" prefWidth="104.0" text="Время задержки">
+                        <padding>
+                            <Insets bottom="15.0" />
+                        </padding>
+                    </Label>
+                    <Slider fx:id="timeDelay" disable="true" max="1" min="0.15" prefHeight="31.0" prefWidth="98.0" showTickLabels="true" showTickMarks="true" />
+                    <Label fx:id="sliderValue" alignment="CENTER" prefHeight="17.0" prefWidth="97.0" text="Value: " textAlignment="CENTER" textFill="#8a8484" visible="false">
+                        <font>
+                            <Font name="Calibri Light" size="11.0" />
+                        </font>
+                    </Label>
+                </VBox>
+                <padding>
+                    <Insets left="25" top="15" />
+                </padding>
+                <padding>
+                    <Insets left="25" top="15" />
+                </padding>
+            </HBox>
+        </VBox>
+        <VBox prefHeight="153.0" prefWidth="350.0">
+            <Label text="Работа над операндами">
+                <padding>
+                    <Insets bottom="15.0" />
+                </padding>
+            </Label>
+            <HBox>
+                <VBox prefHeight="68.0" prefWidth="134.0">
+                    <Label text="Способ ввода">
+                        <padding>
+                            <Insets bottom="15.0" />
+                        </padding>
+                    </Label>
+                    <RadioButton fx:id="onTheLineInput" selected="true" text="На ленте">
+                        <padding>
+                            <Insets bottom="7.0" />
+                        </padding>
+                    </RadioButton>
+                    <RadioButton fx:id="numberedInput" text="Числовой" />
+                    <padding>
+                        <Insets left="15.0" />
+                    </padding>
+                </VBox>
+                <VBox prefHeight="68.0" prefWidth="179.0">
+                    <Label text="Операнды">
+                        <padding>
+                            <Insets bottom="15.0" />
+                        </padding>
+                    </Label>
+                    <HBox prefHeight="25.0" prefWidth="178.0">
+                        <Label text="A:">
+                            <padding>
+                                <Insets right="3.0" />
+                            </padding>
+                        </Label>
+                        <TextField fx:id="aValueInputted" disable="true" maxHeight="21" maxWidth="55" prefHeight="21.0" prefWidth="53.0">
+                            <padding>
+                                <Insets left="10.0" />
+                            </padding>
+                        </TextField>
+                        <Button fx:id="clearValuesOperands" disable="true" maxHeight="25.0" maxWidth="83.0" prefHeight="25.0" prefWidth="83.0" text="Очистить">
+                            <HBox.margin>
+                                <Insets left="15.0" />
+                            </HBox.margin>
+                        </Button>
+                        <padding>
+                            <Insets bottom="7.0" />
+                        </padding>
+                    </HBox>
+                    <HBox>
+                        <Label text="B:">
+                            <padding>
+                                <Insets right="2.0" />
+                            </padding>
+                        </Label>
+                        <TextField fx:id="bValueInputted" disable="true" maxHeight="21" maxWidth="55" prefHeight="15.0" prefWidth="55.0" />
+                        <Button fx:id="applyValuesOperands" disable="true" maxHeight="25.0" maxWidth="86.0" prefHeight="25.0" prefWidth="86.0" text="Применить">
+                            <HBox.margin>
+                                <Insets left="15.0" />
+                            </HBox.margin>
+                        </Button>
+                    </HBox>
+                </VBox>
+            </HBox>
+        </VBox>
+        <padding>
+            <Insets left="25" right="15" />
+        </padding>
+    </HBox>
+    <Line fx:id="colourLine" endX="619.0" endY="331" startY="331" strokeWidth="6" GridPane.RowSpan="1" GridPane.columnIndex="0" GridPane.columnSpan="7" GridPane.rowIndex="8" />
+    <HBox prefHeight="153.0" prefWidth="624.0" GridPane.RowSpan="1" GridPane.columnIndex="0" GridPane.columnSpan="7" GridPane.rowIndex="4">
+
+        <HBox prefHeight="138.0" prefWidth="287.0">
+            <HBox alignment="TOP_CENTER" blendMode="DARKEN" depthTest="ENABLE" prefHeight="138.0" prefWidth="275.0">
+                <children>
+                    <Label blendMode="DARKEN" depthTest="ENABLE" prefHeight="25.0" prefWidth="86.0" text="Сохранять трассу">
+                        <font>
+                            <Font name="Calibri Light Italic" size="12.0" />
+                        </font>
+                  <opaqueInsets>
+                     <Insets />
+                  </opaqueInsets>
+                    </Label>
+                    <CheckBox fx:id="saveStackTraceCheckBox" prefHeight="28.0" prefWidth="16.0" />
+                    <Button fx:id="openTrace" alignment="CENTER" blendMode="OVERLAY" cache="true" mnemonicParsing="false" prefHeight="25.0" prefWidth="109.0" text="Показать трассу">
+                        <HBox.margin>
+                            <Insets left="15.0" />
+                        </HBox.margin>
+                    </Button>
+                </children>
+                <opaqueInsets>
+                    <Insets />
+                </opaqueInsets>
+            </HBox>
+            <HBox.margin>
+                <Insets top="15.0" />
+            </HBox.margin>
+        </HBox>
+        <Button fx:id="stepForward" disable="true" maxHeight="25.0" maxWidth="86.0" prefHeight="25.0" prefWidth="86.0" text="Шаг">
+            <padding>
+                <Insets left="15.0" right="15.0" />
+            </padding>
+            <HBox.margin>
+                <Insets right="15.0" top="15.0" />
+            </HBox.margin>
+        </Button>
+        <Button fx:id="stop" disable="true" maxHeight="25.0" maxWidth="86.0" prefHeight="25.0" prefWidth="86.0" text="Стоп">
+            <HBox.margin>
+                <Insets right="15.0" top="15.0" />
+            </HBox.margin>
+        </Button>
+        <Button fx:id="start" maxHeight="25.0" maxWidth="86.0" prefHeight="25.0" prefWidth="86.0" text="Старт">
+            <HBox.margin>
+                <Insets top="15.0" />
+            </HBox.margin>
+        </Button>
+
+    </HBox>
+    <columnConstraints>
+        <ColumnConstraints />
+        <ColumnConstraints />
+        <ColumnConstraints />
+        <ColumnConstraints />
+        <ColumnConstraints />
+        <ColumnConstraints />
+        <ColumnConstraints />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+    </rowConstraints>
+</GridPane>
