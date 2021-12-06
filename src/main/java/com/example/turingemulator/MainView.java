@@ -166,7 +166,7 @@ public class MainView extends Application implements Initializable {
         initRowConditionsGraphical();
         initContextMenu();
         initInputValueType();
-        initTypeWork();
+        //initTypeWork();
         initIncludeAlgorithms();
         initResetOption();
 
@@ -202,7 +202,7 @@ public class MainView extends Application implements Initializable {
             currentRuleTable.filler(rowConditions);
             currentRuleTable.update();
         };
-
+        addColumnFromRightSide();
         for (TableColumn column :
                 listLentColumns) {
             column.setOnEditCommit(cellEditEventEventHandler);
@@ -385,7 +385,7 @@ public class MainView extends Application implements Initializable {
 
         addFromRightTextMenuItem.setOnAction(event -> {
             //если меньше 20 столбцов
-            if (rowConditions.get(0).getEnderIndex() < 19) {
+            if (controller.getRowConditions().get(0).getEnderIndex() < 19) {
                 //например 2 столбца
                 int endedPoint = rowConditions.get(0).getEnderIndex();
 
@@ -574,7 +574,7 @@ public class MainView extends Application implements Initializable {
         });
     }
 
-    private void initTypeWork() {
+    /*private void initTypeWork() {
         ToggleGroup group = new ToggleGroup();
 
         step.setToggleGroup(group);
@@ -652,7 +652,7 @@ public class MainView extends Application implements Initializable {
             stepForward.disableProperty().unbind();
             stop.disableProperty().unbind();
         });
-    }
+    }*/
 
 
     public void colorized() {
@@ -661,12 +661,12 @@ public class MainView extends Application implements Initializable {
             lentColumn.setStyle(" ");
         }
 
-        listLentColumns.get(currentPosition.getCurrentLentColumn()).setStyle("-fx-background-color: linear-gradient(to right, red, blue);");
+        listLentColumns.get(controller.getCurrentPosition().getCurrentLentColumn()).setStyle("-fx-background-color: linear-gradient(to right, red, blue);");
 
         TableCell cellConditionsTable = (TableCell) mapConditionTable.queryAccessibleAttribute(
                 AccessibleAttribute.CELL_AT_ROW_COLUMN,
-                currentPosition.getCurrentRowCondition(),
-                currentPosition.getCurrentColumnCondition());
+                controller.getCurrentPosition().getCurrentRowCondition(),
+                controller.getCurrentPosition().getCurrentColumnCondition());
         cellConditionsTable.setStyle("-fx-background-color: linear-gradient(to right, red, blue);");
     }
 
@@ -678,8 +678,8 @@ public class MainView extends Application implements Initializable {
 
         TableCell cellConditionsTable = (TableCell) mapConditionTable.queryAccessibleAttribute(
                 AccessibleAttribute.CELL_AT_ROW_COLUMN,
-                currentPosition.getCurrentRowCondition(),
-                currentPosition.getCurrentColumnCondition());
+                controller.getCurrentPosition().getCurrentRowCondition(),
+                controller.getCurrentPosition().getCurrentColumnCondition());
         cellConditionsTable.setStyle(" ");
     }
 
@@ -704,15 +704,32 @@ public class MainView extends Application implements Initializable {
     }
 
     private void initIncludeAlgorithms() {
-
         plusMenu.setOnAction(event -> {
             newFileAlgorithmMenu.fire();
 
-            controller.plusDataInit();
+            for (int i = 0; i < 5; i++) {
+                addColumnFromRightSide();
+            }
+
+            rowConditions = controller.plusDataInit();
 
             currentRuleTable.filler(rowConditions);
             currentRuleTable.update();
         });
+    }
+
+    private void addColumnFromRightSide() {
+        //например 2 столбца
+        int endedPoint = controller.getRowConditions().get(0).getEnderIndex();
+
+        TableColumn openedColumn = listConditionsColumns.get(endedPoint + 1);
+        TableColumn preOpenedColumn = listConditionsColumns.get(endedPoint);
+        openedColumn.setVisible(true);
+        openedColumn.setEditable(false);
+
+        preOpenedColumn.setEditable(true);
+
+        rowConditions = controller.plusDataInitPrepareData();
     }
 
     //Очистка таблиц
@@ -720,19 +737,16 @@ public class MainView extends Application implements Initializable {
         newFileLineMenu.setOnAction(event -> {
             fullUncolorized();
 
-            for (int i = 0; i < lentData.getListLentData().size(); i++) {
-                lentData.getListLentData().set(i, "_");
-            }
+            lentData = controller.clearLent();
 
             currentLentTable.filler(lentData);
             currentLentTable.update();
         });
 
         newFileAlgorithmMenu.setOnAction(event -> {
-            System.out.println(rowConditions.get(0).getEnderIndex());
             fullUncolorized();
 
-            int endedPoint = rowConditions.get(0).getEnderIndex();
+            int endedPoint = controller.getRowConditions().get(0).getEnderIndex();
             while (endedPoint != 2) {
                 TableColumn openedColumn = listConditionsColumns.get(endedPoint);
                 openedColumn.setVisible(false);
@@ -743,17 +757,24 @@ public class MainView extends Application implements Initializable {
             TableColumn third = listConditionsColumns.get(endedPoint);
             third.setEditable(false);
 
-            rowConditions.clear();
             rulesDataOserver.clear();
             listConditionsColumns.clear();
+            mapConditionTable.getColumns().clear();
 
-            currentPosition.setCurrentLentColumn(0);
-            currentPosition.setCurrentRowCondition(0);
-            currentPosition.setCurrentColumnCondition(1);
-
+            rowConditions = controller.clearAlgorithmData();
             initRowConditionsGraphical();
+            controller.setRowConditions(rowConditions);
+
+            /*rowConditions = controller.initDefaultAlgorithmData();
+
+            for (int i = 0; i < 5; i++) {
+                rulesDataOserver.add(rowConditions.get(i));
+            }
+
+            mapConditionTable.setItems(rulesDataOserver);
+
+            currentRuleTable.filler(rowConditions);
+            currentRuleTable.update();*/
         });
     }
-
-
 }

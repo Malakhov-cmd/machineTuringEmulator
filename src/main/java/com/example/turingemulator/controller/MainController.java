@@ -73,6 +73,14 @@ public class MainController {
         this.rowConditions = rowConditions;
     }
 
+    public PositionUpdater getCurrentPosition() {
+        return currentPosition;
+    }
+
+    public void setCurrentPosition(PositionUpdater currentPosition) {
+        this.currentPosition = currentPosition;
+    }
+
     public LentData commitLentTableCell(String newValue, int columnIndex) throws LentInputException {
         boolean existInRows = false;
 
@@ -358,15 +366,41 @@ public class MainController {
         }
     }
 
-    public LentData clearLent(){
+    public LentData clearLent() {
         for (int i = 0; i < lentData.getListLentData().size(); i++) {
             lentData.getListLentData().set(i, "_");
         }
         return lentData;
     }
 
+    public List<RowCondition> clearAlgorithmData() {
+        rowConditions.clear();
+        currentPosition.setCurrentLentColumn(0);
+        currentPosition.setCurrentRowCondition(0);
+        currentPosition.setCurrentColumnCondition(1);
+
+        return rowConditions;
+    }
+
+    public List<RowCondition> initDefaultAlgorithmData() {
+        RowCondition downSpace = new RowCondition("_");
+        RowCondition plus = new RowCondition("+");
+        plus.setAction(true);
+        RowCondition equality = new RowCondition("=");
+        RowCondition one = new RowCondition("1");
+        RowCondition zero = new RowCondition("0");
+
+        rowConditions.add(downSpace);
+        rowConditions.add(plus);
+        rowConditions.add(one);
+        rowConditions.add(zero);
+        rowConditions.add(equality);
+
+        return rowConditions;
+    }
+
     /*AlgorithmExecuting*/
-    public void startAlgorithm(boolean algorithmStarted, boolean checkerOn) {
+    /*public void startAlgorithm(boolean algorithmStarted, boolean checkerOn) {
         //сигнал для отображения Trace
         algorithmStarted = true;
 
@@ -441,13 +475,21 @@ public class MainController {
             model.stepForward.setDisable(true);
             //onStepMovementAuto();
         }
-    }
+    }*/
 
-    public void plusDataInit() {
-        for (int i = 0; i < 4; i++) {
-            addColumnFromRightSide();
+    public List<RowCondition> plusDataInitPrepareData() {
+        int endedPoint = rowConditions.get(0).getEnderIndex();
+
+        for (RowCondition rowCondition :
+                rowConditions) {
+            rowCondition.setEnderIndex(endedPoint + 1);
         }
 
+        rowConditions = contextMenuService.addRightColumn(2, rowConditions);
+        return rowConditions;
+    }
+
+    public List<RowCondition> plusDataInit() {
         rowConditions.get(0).getListRules().get(0).reset("q0", "_", "R");
         rowConditions.get(0).getListRules().get(1).reset("q2", "=", "R");
         rowConditions.get(0).getListRules().get(2).reset("q3", "1", "L");
@@ -470,23 +512,7 @@ public class MainController {
         rowConditions.get(4).getListRules().get(0).reset("q4", "=", "L");
         rowConditions.get(4).getListRules().get(1).reset("q2", "=", "R");
         rowConditions.get(4).getListRules().get(3).reset("q3", "=", "L");
-    }
 
-    private void addColumnFromRightSide() {
-        int endedPoint = rowConditions.get(0).getEnderIndex();
-
-        TableColumn openedColumn = model.listConditionsColumns.get(endedPoint + 1);
-        TableColumn preOpenedColumn = model.listConditionsColumns.get(endedPoint);
-        openedColumn.setVisible(true);
-        openedColumn.setEditable(false);
-
-        preOpenedColumn.setEditable(true);
-
-        for (RowCondition rowCondition :
-                rowConditions) {
-            rowCondition.setEnderIndex(endedPoint + 1);
-        }
-
-        rowConditions = contextMenuService.addRightColumn(2, rowConditions);
+        return rowConditions;
     }
 }
