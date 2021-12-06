@@ -180,12 +180,12 @@ public class MainView extends Application implements Initializable {
             TablePosition<LentData, String> pos = event.getTablePosition();
 
             try {
-                lentData = controller.commitLentTableCell(event.getNewValue(), pos.getColumn());
+                controller.commitLentTableCell(event.getNewValue(), pos.getColumn());
             } catch (LentInputException e) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "Пожалуйста введите корректные данные");
                 alert.showAndWait();
             }
-            currentLentTable.filler(lentData);
+            currentLentTable.filler(controller.getLentData());
             currentLentTable.update();
         };
 
@@ -194,12 +194,12 @@ public class MainView extends Application implements Initializable {
             String newValue = event.getNewValue();
 
             try {
-                rowConditions = controller.commitRowConditionTableCell(newValue, pos.getColumn(), pos.getRow());
+                controller.commitRowConditionTableCell(newValue, pos.getColumn(), pos.getRow());
             } catch (RowConditionCellException e) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "Пожалуйста, введите корректные данные");
                 alert.showAndWait();
             }
-            currentRuleTable.filler(rowConditions);
+            currentRuleTable.filler(controller.getRowConditions());
             currentRuleTable.update();
         };
         addColumnFromRightSide();
@@ -338,9 +338,7 @@ public class MainView extends Application implements Initializable {
 
         // When user right-click on table
         mapConditionTable.setOnContextMenuRequested(event -> {
-
             contextMenu.show(mapConditionTable, event.getScreenX(), event.getScreenY());
-            //System.out.println(mapConditionTable.getFocusModel().getFocusedCell().getColumn());
         });
 
         addTextMenuItem.setOnAction(event -> {
@@ -357,7 +355,7 @@ public class MainView extends Application implements Initializable {
                             Alert alert = new Alert(Alert.AlertType.ERROR, "Символ уже находится в списке");
                             alert.showAndWait();
                         }
-                        currentRuleTable.filler(rowConditions);
+                        currentRuleTable.filler(controller.getRowConditions());
                         currentRuleTable.update();
                     },
                     () -> System.err.println("something go wrong"));
@@ -367,7 +365,7 @@ public class MainView extends Application implements Initializable {
             int numberSymbol = mapConditionTable.getFocusModel().getFocusedCell().getRow();
 
             try {
-                rowConditions = controller.deleteRow(numberSymbol);
+                controller.deleteRow(numberSymbol);
             } catch (SymbolRowsUseInAnotherTerms e) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "Этот символ используется в других выражениях");
                 alert.showAndWait();
@@ -379,7 +377,7 @@ public class MainView extends Application implements Initializable {
                 alert.showAndWait();
             }
 
-            currentRuleTable.filler(rowConditions);
+            currentRuleTable.filler(controller.getRowConditions());
             currentRuleTable.update();
         });
 
@@ -387,7 +385,7 @@ public class MainView extends Application implements Initializable {
             //если меньше 20 столбцов
             if (controller.getRowConditions().get(0).getEnderIndex() < 19) {
                 //например 2 столбца
-                int endedPoint = rowConditions.get(0).getEnderIndex();
+                int endedPoint = controller.getRowConditions().get(0).getEnderIndex();
 
                 TableColumn openedColumn = listConditionsColumns.get(endedPoint + 1);
                 TableColumn preOpenedColumn = listConditionsColumns.get(endedPoint);
@@ -396,9 +394,9 @@ public class MainView extends Application implements Initializable {
 
                 preOpenedColumn.setEditable(true);
 
-                rowConditions = controller.addFromRight(mapConditionTable.getFocusModel().getFocusedCell().getColumn());
+                controller.addFromRight(mapConditionTable.getFocusModel().getFocusedCell().getColumn());
 
-                currentRuleTable.filler(rowConditions);
+                currentRuleTable.filler(controller.getRowConditions());
                 currentRuleTable.update();
             } else {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "Вы не можете создать больше 20 столбцов");
@@ -407,9 +405,9 @@ public class MainView extends Application implements Initializable {
         });
 
         addFromLeftTextMenuItem.setOnAction(event -> {
-            if (rowConditions.get(0).getEnderIndex() < 19) {
+            if (controller.getRowConditions().get(0).getEnderIndex() < 19) {
                 //например 2 столбца
-                int endedPoint = rowConditions.get(0).getEnderIndex();
+                int endedPoint = controller.getRowConditions().get(0).getEnderIndex();
 
                 TableColumn openedColumn = listConditionsColumns.get(endedPoint + 1);
                 TableColumn preOpenedColumn = listConditionsColumns.get(endedPoint);
@@ -418,9 +416,9 @@ public class MainView extends Application implements Initializable {
 
                 preOpenedColumn.setEditable(true);
 
-                rowConditions = controller.addFromLeft(mapConditionTable.getFocusModel().getFocusedCell().getColumn() - 1);
+                controller.addFromLeft(mapConditionTable.getFocusModel().getFocusedCell().getColumn() - 1);
 
-                currentRuleTable.filler(rowConditions);
+                currentRuleTable.filler(controller.getRowConditions());
                 currentRuleTable.update();
             } else {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "Вы не можете создать больше 20 столбцов");
@@ -433,9 +431,9 @@ public class MainView extends Application implements Initializable {
 
             try {
                 if (!controller.deleteColumn_checkInAlgorithmUsage(columnPicked)) {
-                    rowConditions = controller.deleteColumn(columnPicked);
+                    controller.deleteColumn(columnPicked);
 
-                    int endedPoint = rowConditions.get(0).getEnderIndex() + 1;
+                    int endedPoint = controller.getRowConditions().get(0).getEnderIndex() + 1;
 
                     TableColumn lastColumn = listConditionsColumns.get(endedPoint);
                     TableColumn preLastColumn = listConditionsColumns.get(endedPoint - 1);
@@ -444,7 +442,7 @@ public class MainView extends Application implements Initializable {
 
                     preLastColumn.setEditable(false);
 
-                    currentRuleTable.filler(rowConditions);
+                    currentRuleTable.filler(controller.getRowConditions());
                     currentRuleTable.update();
                 } else {
                     Alert alert = new Alert(Alert.AlertType.ERROR, "Состояние используется в алгоритме");
@@ -467,9 +465,9 @@ public class MainView extends Application implements Initializable {
                         int columnPicked = mapConditionTable.getFocusModel().getFocusedCell().getColumn() - 1;
                         int rowPicked = mapConditionTable.getFocusModel().getFocusedCell().getRow();
 
-                        rowConditions = controller.editDescription(result, columnPicked, rowPicked);
+                        controller.editDescription(result, columnPicked, rowPicked);
 
-                        currentRuleTable.filler(rowConditions);
+                        currentRuleTable.filler(controller.getRowConditions());
                         currentRuleTable.update();
                     },
                     () -> System.out.println("System error"));
@@ -482,7 +480,7 @@ public class MainView extends Application implements Initializable {
             int columnPicked = mapConditionTable.getFocusModel().getFocusedCell().getColumn() - 1;
             int rowPicked = mapConditionTable.getFocusModel().getFocusedCell().getRow();
 
-            TextArea areaTXTError = new TextArea(rowConditions.get(rowPicked).getListRules().get(columnPicked).getDescription());
+            TextArea areaTXTError = new TextArea(controller.getRowConditions().get(rowPicked).getListRules().get(columnPicked).getDescription());
             areaTXTError.setEditable(false);
 
             alert.getDialogPane().setExpandableContent(areaTXTError);
@@ -498,9 +496,9 @@ public class MainView extends Application implements Initializable {
             dialog.showAndWait().ifPresentOrElse(
                     result -> {
                         try {
-                            rowConditions = controller.editRule(result, columnPicked, rowPicked);
+                            controller.editRule(result, columnPicked, rowPicked);
 
-                            currentRuleTable.filler(rowConditions);
+                            currentRuleTable.filler(controller.getRowConditions());
                             currentRuleTable.update();
                         } catch (RowConditionCellException e) {
                             Alert alert = new Alert(Alert.AlertType.ERROR, "Неверный формат ввода правил");
@@ -517,9 +515,9 @@ public class MainView extends Application implements Initializable {
             int columnPicked = mapConditionTable.getFocusModel().getFocusedCell().getColumn() - 1;
             int rowPicked = mapConditionTable.getFocusModel().getFocusedCell().getRow();
 
-            rowConditions = controller.clearRule(columnPicked, rowPicked);
+            controller.clearRule(columnPicked, rowPicked);
 
-            currentRuleTable.filler(rowConditions);
+            currentRuleTable.filler(controller.getRowConditions());
             currentRuleTable.update();
         });
 
@@ -553,7 +551,7 @@ public class MainView extends Application implements Initializable {
 
         applyValuesOperands.setOnAction(event -> {
             try {
-                lentData = controller.applyOperandWay(aValueInputted.getText(), bValueInputted.getText());
+                controller.applyOperandWay(aValueInputted.getText(), bValueInputted.getText());
             } catch (IncreaseMaxValueException e) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "Максимальное значение операнда составляет 50");
                 alert.showAndWait();
@@ -562,14 +560,14 @@ public class MainView extends Application implements Initializable {
                 alert.showAndWait();
             }
 
-            currentLentTable.filler(lentData);
+            currentLentTable.filler(controller.getLentData());
             currentLentTable.update();
         });
 
         clearValuesOperands.setOnAction(event -> {
-            lentData = controller.clearLent();
+            controller.clearLent();
 
-            currentLentTable.filler(lentData);
+            currentLentTable.filler(controller.getLentData());
             currentLentTable.update();
         });
     }
@@ -689,8 +687,8 @@ public class MainView extends Application implements Initializable {
             lentColumn.setStyle(" ");
         }
 
-        for (int i = 0; i < rowConditions.size(); i++) {
-            for (int j = 0; j < rowConditions.get(i).getListRules().size(); j++) {
+        for (int i = 0; i < controller.getRowConditions().size(); i++) {
+            for (int j = 0; j < controller.getRowConditions().get(i).getListRules().size(); j++) {
                 try {
                     TableCell cellConditionsTable = (TableCell) mapConditionTable.queryAccessibleAttribute(
                             AccessibleAttribute.CELL_AT_ROW_COLUMN,
@@ -711,9 +709,9 @@ public class MainView extends Application implements Initializable {
                 addColumnFromRightSide();
             }
 
-            rowConditions = controller.plusDataInit();
+            controller.plusDataInit();
 
-            currentRuleTable.filler(rowConditions);
+            currentRuleTable.filler(controller.getRowConditions());
             currentRuleTable.update();
         });
     }
@@ -729,7 +727,7 @@ public class MainView extends Application implements Initializable {
 
         preOpenedColumn.setEditable(true);
 
-        rowConditions = controller.plusDataInitPrepareData();
+        controller.plusDataInitPrepareData();
     }
 
     //Очистка таблиц
@@ -737,9 +735,9 @@ public class MainView extends Application implements Initializable {
         newFileLineMenu.setOnAction(event -> {
             fullUncolorized();
 
-            lentData = controller.clearLent();
+            controller.clearLent();
 
-            currentLentTable.filler(lentData);
+            currentLentTable.filler(controller.getLentData());
             currentLentTable.update();
         });
 
