@@ -100,11 +100,11 @@ public class MainView extends Application implements Initializable {
 
     private static Stage pStage;
 
-    public int lentStateCounter = 0;
+    /*public int lentStateCounter = 0;
     public StringBuilder currentLentState = new StringBuilder();
 
     boolean algorithmStarted = false;
-    private Trace trace = new Trace();
+    private Trace trace = new Trace();*/
     /**/
 
     /*Сохранение данных программы*/
@@ -123,7 +123,7 @@ public class MainView extends Application implements Initializable {
     public MenuItem aboutProgramMenuItem;
     public MenuItem infoAboutSystemMenu;
 
-    private List<TableColumn> listLentColumns = new ArrayList<>();
+    public List<TableColumn> listLentColumns = new ArrayList<>();
     public List<TableColumn> listConditionsColumns = new ArrayList<>();
 
     private ObservableList<LentData> lentDataOserver = FXCollections.observableArrayList();
@@ -166,7 +166,7 @@ public class MainView extends Application implements Initializable {
         initRowConditionsGraphical();
         initContextMenu();
         initInputValueType();
-        //initTypeWork();
+        initTypeWork();
         initIncludeAlgorithms();
         initResetOption();
 
@@ -520,8 +520,6 @@ public class MainView extends Application implements Initializable {
             currentRuleTable.filler(controller.getRowConditions());
             currentRuleTable.update();
         });
-
-        //TODO не работает с первого раза добавление справа и слева
     }
 
     private void initInputValueType() {
@@ -572,7 +570,7 @@ public class MainView extends Application implements Initializable {
         });
     }
 
-    /*private void initTypeWork() {
+    private void initTypeWork() {
         ToggleGroup group = new ToggleGroup();
 
         step.setToggleGroup(group);
@@ -614,43 +612,17 @@ public class MainView extends Application implements Initializable {
         });
 
         start.setOnAction(event -> {
-            controller.startAlgorithm(algorithmStarted, checkerOn.isSelected());
+            controller.startAlgorithm(checkerOn.isSelected());
         });
 
         stepForward.setOnAction(event -> {
-            //onStepMovement();
             controller.stepForward();
         });
 
         stop.setOnAction(event -> {
-            currentPosition.setCurrentLentColumn(0);
-            currentPosition.setCurrentRowCondition(0);
-            currentPosition.setCurrentColumnCondition(1);
-
-            lentStateCounter = 0;
-            if (saveStackTraceCheckBox.isSelected() && Trace.getStatus()) {
-                //Добавляем финальную надпись
-                //Конец процесса
-                Trace.getEnded(true);
-                Trace.getStopByUser(true);
-            }
-
-            saveStackTraceCheckBox.setDisable(false);
-
-            if (step.isSelected()) {
-                applyValuesOperands.fire();
-                stepForward.setDisable(true);
-            }
-            if (auto.isSelected()) {
-                //cancelDraw();
-            }
-            fullUncolorized();
-            start.setDisable(false);
-
-            stepForward.disableProperty().unbind();
-            stop.disableProperty().unbind();
+            controller.stop();
         });
-    }*/
+    }
 
 
     public void colorized() {
@@ -681,7 +653,7 @@ public class MainView extends Application implements Initializable {
         cellConditionsTable.setStyle(" ");
     }
 
-    private void fullUncolorized() {
+    public void fullUncolorized() {
         for (TableColumn lentColumn :
                 listLentColumns) {
             lentColumn.setStyle(" ");
@@ -762,17 +734,6 @@ public class MainView extends Application implements Initializable {
             rowConditions = controller.clearAlgorithmData();
             initRowConditionsGraphical();
             controller.setRowConditions(rowConditions);
-
-            /*rowConditions = controller.initDefaultAlgorithmData();
-
-            for (int i = 0; i < 5; i++) {
-                rulesDataOserver.add(rowConditions.get(i));
-            }
-
-            mapConditionTable.setItems(rulesDataOserver);
-
-            currentRuleTable.filler(rowConditions);
-            currentRuleTable.update();*/
         });
     }
 }

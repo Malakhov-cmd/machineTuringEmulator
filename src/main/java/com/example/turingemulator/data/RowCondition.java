@@ -10,9 +10,7 @@ public class RowCondition {
     private boolean isAction;
     private int enderIndex;
 
-    public RowCondition(){
-
-    }
+    public RowCondition(){}
 
     public RowCondition(String symbolLine) {
         listRules = new ArrayList<>();
@@ -22,7 +20,7 @@ public class RowCondition {
         enderIndex = 2;
         isAction = false;
 
-        for (int i = 0; i < 21; i++) {
+        for (int i = 0; i < 20; i++) {
             Rule rule = new Rule(symbolLine, "q" + i);
             listRules.add(rule);
         }

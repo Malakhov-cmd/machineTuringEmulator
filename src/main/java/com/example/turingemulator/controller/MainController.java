@@ -23,14 +23,13 @@ import com.example.turingemulator.exception.operands.IncreaseMaxValueException;
 import com.example.turingemulator.exception.operands.NonDigitValuesException;
 import com.example.turingemulator.view.Trace;
 import javafx.scene.control.Alert;
-import javafx.scene.control.TableColumn;
 
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
 public class MainController {
-    private MainView model;
+    private MainView view;
 
     private LentData lentData;
     private List<RowCondition> rowConditions;
@@ -38,23 +37,31 @@ public class MainController {
 
     private Pattern patternRuleInput = Pattern.compile("q\\d+\\|\\S\\S*\\|((R)|(L)|(S))");
 
-    private ContextMenuService contextMenuService = new ContextMenuService();
-    private AnalizatorService analizatorService = new AnalizatorService();
-    private AlgorithmsService algorithmsService = new AlgorithmsService();
+    /*Для трассы*/
+    public int lentStateCounter = 0;
+    public StringBuilder currentLentState = new StringBuilder();
 
-    public MainController(MainView model, LentData lentData, List<RowCondition> rowCondition, PositionUpdater positionUpdater) {
-        this.model = model;
+    boolean algorithmStarted = false;
+    private Trace trace = new Trace();
+
+    private ContextMenuService contextMenuService = new ContextMenuService();
+    private AnalizatorService analizatorService = new AnalizatorService(this);
+    private AlgorithmsService algorithmsService;
+
+    public MainController(MainView view, LentData lentData, List<RowCondition> rowCondition, PositionUpdater positionUpdater) {
+        this.view = view;
         this.lentData = lentData;
         this.rowConditions = rowCondition;
         this.currentPosition = positionUpdater;
+        this.algorithmsService = new AlgorithmsService(this, view);
     }
 
-    public MainView getModel() {
-        return model;
+    public MainView getView() {
+        return view;
     }
 
-    public void setModel(MainView model) {
-        this.model = model;
+    public void setView(MainView view) {
+        this.view = view;
     }
 
     public LentData getLentData() {
@@ -81,7 +88,7 @@ public class MainController {
         this.currentPosition = currentPosition;
     }
 
-    public LentData commitLentTableCell(String newValue, int columnIndex) throws LentInputException {
+    public void commitLentTableCell(String newValue, int columnIndex) throws LentInputException {
         boolean existInRows = false;
 
         for (RowCondition row :
@@ -93,12 +100,11 @@ public class MainController {
         }
         if (existInRows) {
             lentData.getListLentData().set(columnIndex, newValue);
-            return lentData;
         }
         throw new LentInputException();
     }
 
-    public List<RowCondition> commitRowConditionTableCell(
+    public void commitRowConditionTableCell(
             String newCondition,
             int columnIndex,
             int rowIndex)
@@ -138,14 +144,13 @@ public class MainController {
                 currentRule.setMoveTo(moveTo);
 
                 rowConditions.get(rowIndex).getListRules().set(columnIndex - 1, currentRule);
-                return rowConditions;
             } else {
                 throw new RowConditionCellException();
             }
         }
     }
 
-    public List<RowCondition> addRow(String newSymbol)
+    public void addRow(String newSymbol)
             throws AddingIncorrectSymbolException,
 
             AlreadyBeingInSymbolsList {
@@ -164,7 +169,6 @@ public class MainController {
             if (!alreadyIn) {
                 RowCondition newCondition = new RowCondition(newSymbol);
                 rowConditions.add(newCondition);
-                return rowConditions;
             } else {
                 throw new AlreadyBeingInSymbolsList();
             }
@@ -173,7 +177,7 @@ public class MainController {
         }
     }
 
-    public List<RowCondition> deleteRow(int numberSymbol)
+    public void deleteRow(int numberSymbol)
             throws SymbolRowsUseInAnotherTerms,
             SymbolUseInLentData,
             SystemSymbolUsageException {
@@ -204,13 +208,12 @@ public class MainController {
                 && !symbolToDelete.getSymbolLine().equals("0")
                 && !symbolToDelete.getSymbolLine().equals("_")) {
             rowConditions.remove(numberSymbol);
-            return rowConditions;
         } else {
             throw new SystemSymbolUsageException();
         }
     }
 
-    public List<RowCondition> addFromRight(int column) {
+    public void addFromRight(int column) {
         int endedPoint = rowConditions.get(0).getEnderIndex();
 
         for (RowCondition rowCondition :
@@ -219,10 +222,9 @@ public class MainController {
         }
 
         rowConditions = contextMenuService.addRightColumn(column, rowConditions);
-        return rowConditions;
     }
 
-    public List<RowCondition> addFromLeft(int column) {
+    public void addFromLeft(int column) {
         int endedPoint = rowConditions.get(0).getEnderIndex();
 
         for (RowCondition rowCondition :
@@ -231,7 +233,6 @@ public class MainController {
         }
 
         rowConditions = contextMenuService.addLeftColumn(column, rowConditions);
-        return rowConditions;
     }
 
     public boolean deleteColumn_checkInAlgorithmUsage(int columnPicked)
@@ -251,7 +252,7 @@ public class MainController {
         return false;
     }
 
-    public List<RowCondition> deleteColumn(int columnPicked) {
+    public void deleteColumn(int columnPicked) {
         rowConditions = contextMenuService.deleteColumnAlgorithm(columnPicked, rowConditions);
         int endedPoint = rowConditions.get(0).getEnderIndex();
 
@@ -259,17 +260,14 @@ public class MainController {
                 rowConditions) {
             rowCondition.setEnderIndex(endedPoint - 1);
         }
-
-        return rowConditions;
     }
 
-    public List<RowCondition> editDescription(String description, int columnIndex, int rowIndex) {
+    public void editDescription(String description, int columnIndex, int rowIndex) {
         rowConditions.get(rowIndex).getListRules()
                 .get(columnIndex).setDescription(description);
-        return rowConditions;
     }
 
-    public List<RowCondition> editRule(
+    public void editRule(
             String newRuleSTR,
             int columnIndex,
             int rowIndex)
@@ -314,20 +312,18 @@ public class MainController {
                 currentRule.setMoveTo(moveTo);
 
                 rowConditions.get(rowIndex).getListRules().set(columnIndex, currentRule);
-                return rowConditions;
             } else {
                 throw new RowConditionCellException();
             }
         }
     }
 
-    public List<RowCondition> clearRule(int columnIndex, int rowIndex) {
+    public void clearRule(int columnIndex, int rowIndex) {
         rowConditions.get(rowIndex).getListRules().get(columnIndex)
                 .reset(" ", " ", " ", " ");
-        return rowConditions;
     }
 
-    public LentData applyOperandWay(String aValueInputted, String bValueInputted)
+    public void applyOperandWay(String aValueInputted, String bValueInputted)
             throws IncreaseMaxValueException, NonDigitValuesException {
         Pattern patternLentInput = Pattern.compile("(\\d)|(\\d\\d)");
 
@@ -356,8 +352,6 @@ public class MainController {
                 for (int i = aValue + 2; i < aValue + bValue + 2; i++) {
                     lentData.getListLentData().set(i, "1");
                 }
-
-                return lentData;
             } else {
                 throw new IncreaseMaxValueException();
             }
@@ -366,11 +360,10 @@ public class MainController {
         }
     }
 
-    public LentData clearLent() {
+    public void clearLent() {
         for (int i = 0; i < lentData.getListLentData().size(); i++) {
             lentData.getListLentData().set(i, "_");
         }
-        return lentData;
     }
 
     public List<RowCondition> clearAlgorithmData() {
@@ -400,14 +393,14 @@ public class MainController {
     }
 
     /*AlgorithmExecuting*/
-    /*public void startAlgorithm(boolean algorithmStarted, boolean checkerOn) {
+    public void startAlgorithm(boolean checkerOn) {
         //сигнал для отображения Trace
         algorithmStarted = true;
 
         //проверка настроек
         if (checkerOn) {
             try {
-                if (analizatorService.analizator(rowConditions, lentData)) {
+                if (analizatorService.analizator()) {
                     defaultStart();
                 }
             } catch (EmptyInitialRuleException e) {
@@ -437,59 +430,85 @@ public class MainController {
         }
     }
 
-    public void stepForward(){
-        algorithmsService.onStepMovement(rowConditions, lentData, model, currentPosition);
+    public void stepForward() {
+        algorithmsService.onStepMovement();
+    }
+
+    public void stop() {
+        currentPosition.setCurrentLentColumn(0);
+        currentPosition.setCurrentRowCondition(0);
+        currentPosition.setCurrentColumnCondition(1);
+
+        lentStateCounter = 0;
+        if (view.saveStackTraceCheckBox.isSelected() && Trace.getStatus()) {
+            //Добавляем финальную надпись
+            //Конец процесса
+            Trace.getEnded(true);
+            Trace.getStopByUser(true);
+        }
+
+        view.saveStackTraceCheckBox.setDisable(false);
+
+        if (view.step.isSelected()) {
+            view.applyValuesOperands.fire();
+            view.stepForward.setDisable(true);
+        }
+        if (view.auto.isSelected()) {
+            //cancelDraw();
+        }
+        view.fullUncolorized();
+        view.start.setDisable(false);
+
+        view.stepForward.disableProperty().unbind();
+        view.stop.disableProperty().unbind();
     }
 
     private void defaultStart() {
         //если кнопка выключена
-        if (model.stepForward.isDisabled()) {
-            model.stepForward.setDisable(false);
+        if (view.stepForward.isDisabled()) {
+            view.stepForward.setDisable(false);
         }
-        if (model.stop.isDisabled()) {
-            model.stop.setDisable(false);
+        if (view.stop.isDisabled()) {
+            view.stop.setDisable(false);
         }
-        model.colorized();
+        view.colorized();
 
-        if (model.saveStackTraceCheckBox.isSelected()) {
+        if (view.saveStackTraceCheckBox.isSelected()) {
             //формирование трассы
             Date date = new Date();
-            model.currentLentState.append("Initial process at ").append(date).append(" \n");
-            model.lentStateCounter++;
-            Trace.getStringBuilder(model.currentLentState);
+            currentLentState.append("Initial process at ").append(date).append(" \n");
+            lentStateCounter++;
+            Trace.getStringBuilder(currentLentState);
         }
 
-        model.saveStackTraceCheckBox.setDisable(true);
+        view.saveStackTraceCheckBox.setDisable(true);
 
-        if (model.step.isSelected()) {
-            model.start.setDisable(true);
-
-            algorithmsService.onStepMovement(rowConditions, lentData, model, currentPosition);
+        if (view.step.isSelected()) {
+            view.start.setDisable(true);
+            algorithmsService.onStepMovement();
         }
-        if (model.auto.isSelected()) {
-            model.stepForward.setDisable(true);
-            model.start.setDisable(true);
+        if (view.auto.isSelected()) {
+            view.stepForward.setDisable(true);
+            view.start.setDisable(true);
             //startDraw();
         }
-        if (model.onlyResult.isSelected()) {
-            model.stepForward.setDisable(true);
-            //onStepMovementAuto();
+        if (view.onlyResult.isSelected()) {
+            view.stepForward.setDisable(true);
+            algorithmsService.onStepMovementAuto();
         }
-    }*/
+    }
 
-    public List<RowCondition> plusDataInitPrepareData() {
+    public void plusDataInitPrepareData() {
         int endedPoint = rowConditions.get(0).getEnderIndex();
 
         for (RowCondition rowCondition :
                 rowConditions) {
             rowCondition.setEnderIndex(endedPoint + 1);
         }
-
         rowConditions = contextMenuService.addRightColumn(2, rowConditions);
-        return rowConditions;
     }
 
-    public List<RowCondition> plusDataInit() {
+    public void plusDataInit() {
         rowConditions.get(0).getListRules().get(0).reset("q0", "_", "R");
         rowConditions.get(0).getListRules().get(1).reset("q2", "=", "R");
         rowConditions.get(0).getListRules().get(2).reset("q3", "1", "L");
@@ -512,7 +531,5 @@ public class MainController {
         rowConditions.get(4).getListRules().get(0).reset("q4", "=", "L");
         rowConditions.get(4).getListRules().get(1).reset("q2", "=", "R");
         rowConditions.get(4).getListRules().get(3).reset("q3", "=", "L");
-
-        return rowConditions;
     }
 }
