@@ -5,14 +5,20 @@ import com.example.turingemulator.controller.MainController;
 import com.example.turingemulator.data.Rule;
 import com.example.turingemulator.view.Trace;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.scene.control.Alert;
 
 import java.util.Date;
+import java.util.Objects;
 
 public class AlgorithmsService {
     private MainController mainController;
     private MainView mainView;
     private boolean error = false;
+
+    private Task<Void> task;
+
+    //TODO отобразить lentData > 100
 
     public AlgorithmsService(MainController mainController, MainView mainView) {
         this.mainController = mainController;
@@ -22,11 +28,13 @@ public class AlgorithmsService {
     public void onStepMovement() {
         Platform.runLater(() -> {
             coreAlgorithm();
+            mainController.getCurrentPosition().setFinished(false);
         });
     }
 
     public void onStepMovementAuto() {
         Platform.runLater(() -> {
+            error = false;
             while (!mainController.getCurrentPosition().isFinished() && !error) {
                 coreAlgorithm();
             }
@@ -35,8 +43,34 @@ public class AlgorithmsService {
         mainView.unColorized();
     }
 
+    public void startDraw() {
+        if (task != null && task.isRunning()) {
+            task.cancel();
+        }
+
+        task = new StepTaskService(mainView.delay * 1000, mainController);
+        Thread thread = new Thread(task);
+        thread.setDaemon(true);
+        thread.start();
+        mainController.getCurrentPosition().setFinished(false);
+
+        mainView.stepForward.disableProperty().bind(task.runningProperty());
+        mainView.stop.disableProperty().bind(task.runningProperty().not());
+    }
+
+    public void cancelDraw() {
+        if (task != null)
+            task.cancel();
+        mainController.getCurrentPosition().setCurrentLentColumn(0);
+        mainController.getCurrentPosition().setCurrentRowCondition(0);
+        mainController.getCurrentPosition().setCurrentColumnCondition(1);
+        mainController.getCurrentPosition().setFinished(false);
+    }
+
     private void coreAlgorithm() {
         try {
+            String lentDataBefore = mainController.getLentData().toString();
+
             //получили текущее правило
             Rule rowFrom = mainController.getRowConditions().get(mainController.getCurrentPosition().getCurrentRowCondition())
                     .getListRules().get(mainController.getCurrentPosition().getCurrentColumnCondition() - 1);
@@ -56,7 +90,8 @@ public class AlgorithmsService {
             if (newConditionInt < 0 || newConditionInt > 20) {
                 error = true;
 
-                Alert alert = new Alert(Alert.AlertType.ERROR, "Неверный номер состояния. Ваши номера правил должны быть в диапазоне от 0 до 20");
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Неверный номер состояния. Ваши номера правил" +
+                        "\n должны быть в диапазоне от 0 до 20");
                 alert.showAndWait();
 
                 if (mainView.saveStackTraceCheckBox.isSelected()) {
@@ -199,9 +234,28 @@ public class AlgorithmsService {
                     mainView.colorized();
                 }
             }
+            String lentDataAfter = mainController.getLentData().toString();
+            lentActuatorGraphical(lentDataBefore, lentDataAfter);
         } catch (Exception e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Что-то пошло не так. Попробуйте включить анализатор в настройках");
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Что-то пошло не так." +
+                    "\n Попробуйте включить анализатор в настройках");
             alert.showAndWait();
+        }
+    }
+
+    private void lentActuatorGraphical(String oldValue, String newValue) {
+        if (!Objects.equals(oldValue, newValue)) {
+            for (int i = 0; i < 201; i++) {
+                int tmpOld = oldValue.charAt(i);
+                int tmpNew = newValue.charAt(i);
+                if (tmpNew == tmpOld && i > 101) {
+                    mainView.listLentColumns.get(mainController.getLentData().getEnder()).setVisible(true);
+                    mainController.getLentData().setEnder(mainController.getLentData().getEnder() + 1);
+
+                    mainView.currentLentTable.filler(mainController.getLentData());
+                    mainView.currentLentTable.update();
+                }
+            }
         }
     }
 }

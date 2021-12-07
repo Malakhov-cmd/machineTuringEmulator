@@ -1,16 +1,11 @@
 package com.example.turingemulator.controller.service;
 
 import com.example.turingemulator.controller.MainController;
-import com.example.turingemulator.controller.updaters.PositionUpdater;
-import com.example.turingemulator.data.LentData;
 import com.example.turingemulator.data.RowCondition;
 import com.example.turingemulator.data.Rule;
 import com.example.turingemulator.exception.analizator.EmptyInitialRuleException;
 import com.example.turingemulator.exception.analizator.EmptyLentDataException;
 import com.example.turingemulator.exception.analizator.NoOneReferendToFinalStateException;
-import javafx.scene.control.Alert;
-
-import java.util.List;
 
 public class AnalizatorService {
     private MainController mainController;

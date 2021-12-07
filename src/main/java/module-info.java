@@ -9,5 +9,6 @@ module com.example.turingemulator {
     opens com.example.turingemulator to javafx.fxml;
     exports com.example.turingemulator;
     exports com.example.turingemulator.controller;
+    exports com.example.turingemulator.view;
     opens com.example.turingemulator.controller to javafx.fxml;
 }

@@ -4,11 +4,14 @@ import com.example.turingemulator.MainView;
 import com.example.turingemulator.controller.service.AlgorithmsService;
 import com.example.turingemulator.controller.service.AnalizatorService;
 import com.example.turingemulator.controller.service.ContextMenuService;
+import com.example.turingemulator.controller.service.FileProcessingService;
 import com.example.turingemulator.controller.updaters.PositionUpdater;
 import com.example.turingemulator.data.LentData;
 import com.example.turingemulator.data.RowCondition;
 import com.example.turingemulator.data.Rule;
 import com.example.turingemulator.exception.*;
+import com.example.turingemulator.exception.lentCellOperation.IncorrectLentSymbolEnteredException;
+import com.example.turingemulator.exception.lentCellOperation.IndexOfLentHeaderOutOfBoundException;
 import com.example.turingemulator.exception.addRow.AddingIncorrectSymbolException;
 import com.example.turingemulator.exception.addRow.AlreadyBeingInSymbolsList;
 import com.example.turingemulator.exception.analizator.EmptyInitialRuleException;
@@ -19,13 +22,20 @@ import com.example.turingemulator.exception.deleteColumn.MinimumColumnSize;
 import com.example.turingemulator.exception.deleteRow.SymbolRowsUseInAnotherTerms;
 import com.example.turingemulator.exception.deleteRow.SymbolUseInLentData;
 import com.example.turingemulator.exception.deleteRow.SystemSymbolUsageException;
+import com.example.turingemulator.exception.lentCellOperation.MinimumLentSizeException;
 import com.example.turingemulator.exception.operands.IncreaseMaxValueException;
 import com.example.turingemulator.exception.operands.NonDigitValuesException;
 import com.example.turingemulator.view.Trace;
+import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
+import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class MainController {
@@ -46,6 +56,7 @@ public class MainController {
 
     private ContextMenuService contextMenuService = new ContextMenuService();
     private AnalizatorService analizatorService = new AnalizatorService(this);
+    private FileProcessingService fileProcessingService = new FileProcessingService(this);
     private AlgorithmsService algorithmsService;
 
     public MainController(MainView view, LentData lentData, List<RowCondition> rowCondition, PositionUpdater positionUpdater) {
@@ -86,6 +97,14 @@ public class MainController {
 
     public void setCurrentPosition(PositionUpdater currentPosition) {
         this.currentPosition = currentPosition;
+    }
+
+    public Trace getTrace() {
+        return trace;
+    }
+
+    public void setTrace(Trace trace) {
+        this.trace = trace;
     }
 
     public void commitLentTableCell(String newValue, int columnIndex) throws LentInputException {
@@ -422,7 +441,8 @@ public class MainController {
                 currentPosition.setCurrentRowCondition(0);
                 currentPosition.setCurrentColumnCondition(1);
 
-                Alert alert = new Alert(Alert.AlertType.ERROR, "На ленте установленые значения по умолчанию. Пожалуйста. установите значение операндов.");
+                Alert alert = new Alert(Alert.AlertType.ERROR, "На ленте установленые значения по умолчанию." +
+                        "\n Пожалуйста. установите значение операндов.");
                 alert.showAndWait();
             }
         } else {
@@ -454,7 +474,7 @@ public class MainController {
             view.stepForward.setDisable(true);
         }
         if (view.auto.isSelected()) {
-            //cancelDraw();
+            algorithmsService.cancelDraw();
         }
         view.fullUncolorized();
         view.start.setDisable(false);
@@ -490,7 +510,7 @@ public class MainController {
         if (view.auto.isSelected()) {
             view.stepForward.setDisable(true);
             view.start.setDisable(true);
-            //startDraw();
+            algorithmsService.startDraw();
         }
         if (view.onlyResult.isSelected()) {
             view.stepForward.setDisable(true);
@@ -531,5 +551,152 @@ public class MainController {
         rowConditions.get(4).getListRules().get(0).reset("q4", "=", "L");
         rowConditions.get(4).getListRules().get(1).reset("q2", "=", "R");
         rowConditions.get(4).getListRules().get(3).reset("q3", "=", "L");
+    }
+
+    public void multyDataInit() {
+        rowConditions.get(1).setSymbolLine("*");
+        for (Rule rule :
+                rowConditions.get(1).getListRules()) {
+            rule.setSymbol("*");
+        }
+
+        rowConditions.get(0).getListRules().get(0).reset("q0", "_", "R");
+        rowConditions.get(0).getListRules().get(1).reset("q2", "=", "L");
+        rowConditions.get(0).getListRules().get(2).reset("q3", "_", "R");
+        rowConditions.get(0).getListRules().get(3).reset("q3", "_", "R");
+        rowConditions.get(0).getListRules().get(6).reset("q9", "_", "R");
+        rowConditions.get(0).getListRules().get(7).reset("q8", "1", "R");
+        rowConditions.get(0).getListRules().get(8).reset("q5", "_", "L");
+
+        rowConditions.get(1).getListRules().get(1).reset("q1", "*", "R");
+        rowConditions.get(1).getListRules().get(2).reset("q2", "*", "L");
+        rowConditions.get(1).getListRules().get(3).reset("q4", "*", "R");
+        rowConditions.get(1).getListRules().get(5).reset("q6", "*", "L");
+        rowConditions.get(1).getListRules().get(7).reset("q7", "*", "R");
+        rowConditions.get(1).getListRules().get(9).reset("q10", "*", "R");
+        rowConditions.get(1).getListRules().get(11).reset("q12", "*", "S");
+
+        rowConditions.get(2).getListRules().get(0).reset("q1", "1", "R");
+        rowConditions.get(2).getListRules().get(1).reset("q1", "1", "R");
+        rowConditions.get(2).getListRules().get(2).reset("q2", "1", "L");
+        rowConditions.get(2).getListRules().get(3).reset("q3", "1", "R");
+        rowConditions.get(2).getListRules().get(4).reset("q5", "0", "R");
+        rowConditions.get(2).getListRules().get(5).reset("q5", "1", "L");
+        rowConditions.get(2).getListRules().get(6).reset("q7", "0", "R");
+        rowConditions.get(2).getListRules().get(7).reset("q7", "1", "R");
+        rowConditions.get(2).getListRules().get(10).reset("q5", "0", "R");
+
+        rowConditions.get(3).getListRules().get(5).reset("q5", "0", "L");
+        rowConditions.get(3).getListRules().get(6).reset("q6", "0", "L");
+        rowConditions.get(3).getListRules().get(7).reset("q7", "0", "R");
+        rowConditions.get(3).getListRules().get(9).reset("q9", "1", "R");
+        rowConditions.get(3).getListRules().get(10).reset("q10", "0", "R");
+        rowConditions.get(3).getListRules().get(11).reset("q12", "1", "L");
+
+        rowConditions.get(4).getListRules().get(5).reset("q5", "=", "L");
+        rowConditions.get(4).getListRules().get(7).reset("q7", "=", "R");
+        rowConditions.get(4).getListRules().get(10).reset("q11", "=", "L");
+    }
+
+    public void isSaveStackTrace() {
+            lentStateCounter = 0;
+            Trace.getStringBuilder(currentLentState);
+    }
+
+    public void showStackTrace() {
+        if (!Trace.getStatus()) {
+            myLaunch(trace);
+        }
+    }
+
+    public static void myLaunch(Application applicationClass) {
+        Platform.runLater(() -> {
+            try {
+                Application application = applicationClass;
+                Stage primaryStage = new Stage();
+                application.start(primaryStage);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void formedStringPresenterOfRowCondition(File file){
+        StringBuilder algorithmFormation = new StringBuilder();
+
+        for (RowCondition row :
+                rowConditions) {
+            for (Rule rule :
+                    row.getListRules()) {
+                algorithmFormation
+                        .append(rule.getConditionFrom()).append("|")
+                        .append(rule.getSymbol()).append("|")
+                        .append(rule.getConditionTo()).append("|")
+                        .append(rule.getSymbolChangeTo()).append("|")
+                        .append(rule.getMoveTo()).append("|")
+                        .append(rule.getDescription())
+                        .append(";");
+            }
+            algorithmFormation.append("\n");
+        }
+        algorithmFormation.append(rowConditions.get(0).getEnderIndex());
+
+        if (file != null) {
+            fileProcessingService.saveAlgorithmData(algorithmFormation.toString(), file);
+        }
+    }
+
+    public void formedAndSavingLentData(File file){
+        if (file != null) {
+            fileProcessingService.saveLentData(lentData.toString(), file);
+        }
+    }
+
+    public void readingAndAnalyzingFiles(File uploadFile){
+        String fileSTR = null;
+        try {
+            fileSTR = fileProcessingService.readUsingFiles(uploadFile);
+        } catch (IOException e) {
+            System.err.println("System error");
+        }
+        fileProcessingService.analizeFileSTR(fileSTR);
+    }
+
+    public void addLentItemViaContextMenu() throws IndexOfLentHeaderOutOfBoundException {
+        if (lentData.getEnder() < 201) {
+            view.listLentColumns.get(lentData.getEnder()).setVisible(true);
+            lentData.setEnder(lentData.getEnder() + 1);
+        } else {
+            throw new IndexOfLentHeaderOutOfBoundException();
+        }
+    }
+
+    public void clearLentItemViaContextMenu() throws MinimumLentSizeException {
+        if (lentData.getEnder() > 101) {
+            view.listLentColumns.get(lentData.getEnder() - 1).setVisible(false);
+            lentData.setEnder(lentData.getEnder() - 1);
+        } else {
+            throw new MinimumLentSizeException();
+        }
+    }
+
+    public void editLentItemViaContextMenu(String newValue)
+            throws IncorrectLentSymbolEnteredException {
+        boolean existInRows = false;
+
+        for (RowCondition row :
+                rowConditions) {
+            if (newValue.equals(row.getSymbolLine())) {
+                existInRows = true;
+                break;
+            }
+        }
+
+        if (!existInRows) {
+           throw new IncorrectLentSymbolEnteredException();
+        } else {
+            int column = view.lentTable.getFocusModel().getFocusedCell().getColumn();
+            lentData.getListLentData().set(column, newValue);
+        }
     }
 }

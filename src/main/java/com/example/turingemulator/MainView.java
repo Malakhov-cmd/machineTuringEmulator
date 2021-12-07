@@ -7,6 +7,8 @@ import com.example.turingemulator.controller.updaters.RuleUpdater;
 import com.example.turingemulator.data.LentData;
 import com.example.turingemulator.data.RowCondition;
 import com.example.turingemulator.exception.*;
+import com.example.turingemulator.exception.lentCellOperation.IncorrectLentSymbolEnteredException;
+import com.example.turingemulator.exception.lentCellOperation.IndexOfLentHeaderOutOfBoundException;
 import com.example.turingemulator.exception.addRow.AddingIncorrectSymbolException;
 import com.example.turingemulator.exception.addRow.AlreadyBeingInSymbolsList;
 import com.example.turingemulator.exception.deleteColumn.DeleteFinalColumnException;
@@ -14,16 +16,15 @@ import com.example.turingemulator.exception.deleteColumn.MinimumColumnSize;
 import com.example.turingemulator.exception.deleteRow.SymbolRowsUseInAnotherTerms;
 import com.example.turingemulator.exception.deleteRow.SymbolUseInLentData;
 import com.example.turingemulator.exception.deleteRow.SystemSymbolUsageException;
+import com.example.turingemulator.exception.lentCellOperation.MinimumLentSizeException;
 import com.example.turingemulator.exception.operands.IncreaseMaxValueException;
 import com.example.turingemulator.exception.operands.NonDigitValuesException;
-import com.example.turingemulator.view.Trace;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
 import javafx.event.EventHandler;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.AccessibleAttribute;
@@ -31,16 +32,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -86,7 +85,7 @@ public class MainView extends Application implements Initializable {
 
     /*Автозаполнение*/
     public MenuItem plusMenu;
-    public MenuItem NODMenu;
+    public MenuItem multyMenu;
     /**/
 
     /*Очистка ленты и таблицы*/
@@ -98,13 +97,7 @@ public class MainView extends Application implements Initializable {
     public CheckBox saveStackTraceCheckBox;
     public Button openTrace;
 
-    private static Stage pStage;
-
-    /*public int lentStateCounter = 0;
-    public StringBuilder currentLentState = new StringBuilder();
-
-    boolean algorithmStarted = false;
-    private Trace trace = new Trace();*/
+    public static Stage pStage;
     /**/
 
     /*Сохранение данных программы*/
@@ -139,7 +132,7 @@ public class MainView extends Application implements Initializable {
 
     private MainController controller;
 
-    private double delay = 0.15;
+    public double delay = 0.15;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -169,6 +162,10 @@ public class MainView extends Application implements Initializable {
         initTypeWork();
         initIncludeAlgorithms();
         initResetOption();
+        initStackTrace();
+        initSaveData();
+        initLentController();
+        initOptionSetter();
 
         // возможность выделять конкретную ячейку (без этого выделяются строки)
         mapConditionTable.getSelectionModel().setCellSelectionEnabled(true);
@@ -213,7 +210,6 @@ public class MainView extends Application implements Initializable {
             column.setOnEditCommit(cellEditEventEventHandlerRules);
         }
     }
-
 
     private void initLentTableGraphical() {
         lentDataOserver.add(lentData);
@@ -349,7 +345,9 @@ public class MainView extends Application implements Initializable {
                         try {
                             controller.addRow(result);
                         } catch (AddingIncorrectSymbolException e) {
-                            Alert alert = new Alert(Alert.AlertType.ERROR, "Пожалуйста, введите правильные данные или удалите одну строку, если количество строк увеличится на 5");
+                            Alert alert = new Alert(Alert.AlertType.ERROR, "Пожалуйста, введите правильные данные или" +
+                                    "\n удалите одну строку, если количество строк увеличится" +
+                                    "\n на 5");
                             alert.showAndWait();
                         } catch (AlreadyBeingInSymbolsList alreadyBeingInSymbolsList) {
                             Alert alert = new Alert(Alert.AlertType.ERROR, "Символ уже находится в списке");
@@ -554,7 +552,8 @@ public class MainView extends Application implements Initializable {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "Максимальное значение операнда составляет 50");
                 alert.showAndWait();
             } catch (NonDigitValuesException e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "Введите корректные значение операндов - целые числа");
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Введите корректные значение операндов -" +
+                        "\n целые числа");
                 alert.showAndWait();
             }
 
@@ -686,9 +685,22 @@ public class MainView extends Application implements Initializable {
             currentRuleTable.filler(controller.getRowConditions());
             currentRuleTable.update();
         });
+
+        multyMenu.setOnAction(event -> {
+            newFileAlgorithmMenu.fire();
+
+            for (int i = 0; i < 11; i++) {
+                addColumnFromRightSide();
+            }
+
+            controller.multyDataInit();
+
+            currentRuleTable.filler(controller.getRowConditions());
+            currentRuleTable.update();
+        });
     }
 
-    private void addColumnFromRightSide() {
+    public void addColumnFromRightSide() {
         //например 2 столбца
         int endedPoint = controller.getRowConditions().get(0).getEnderIndex();
 
@@ -736,4 +748,156 @@ public class MainView extends Application implements Initializable {
             controller.setRowConditions(rowConditions);
         });
     }
+
+    //Демонстрация трассы
+    private void initStackTrace() {
+        saveStackTraceCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (saveStackTraceCheckBox.isSelected()) {
+                controller.isSaveStackTrace();
+            }
+        });
+
+        openTrace.setOnAction(event -> {
+            controller.showStackTrace();
+        });
+    }
+
+    //Сохранение данных
+    private void initSaveData() {
+        saveLineMenu.setOnAction(event -> {
+            FileChooser fileChooser = new FileChooser();
+
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("LMT files (*.lmt)", "*.lmt");
+            fileChooser.getExtensionFilters().add(extFilter);
+
+            File file = fileChooser.showSaveDialog(pStage);
+
+            controller.formedAndSavingLentData(file);
+        });
+
+        saveAlgorithmMenu.setOnAction(event -> {
+            FileChooser fileChooser = new FileChooser();
+
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("AMT files (*.amt)", "*.amt");
+            fileChooser.getExtensionFilters().add(extFilter);
+
+            File file = fileChooser.showSaveDialog(pStage);
+
+            if (file != null) {
+                controller.formedStringPresenterOfRowCondition(file);
+            }
+        });
+
+        FileChooser fileToLoad = new FileChooser();
+        configuringFileChooser(fileToLoad);
+
+        fileIncludeMenu.setOnAction(event -> {
+            File uploadFile = fileToLoad.showOpenDialog(pStage);
+            controller.readingAndAnalyzingFiles(uploadFile);
+        });
+    }
+
+    private void configuringFileChooser(FileChooser fileChooser) {
+        fileChooser.setTitle("Select Pictures");
+
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+
+        // Add Extension Filters
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Lent data", "*.lmt"),
+                new FileChooser.ExtensionFilter("Algorithm data", "*.amt")
+        );
+    }
+
+    //contextMenuLentController
+    public void initLentController() {
+        ContextMenu contextMenuLentController = new ContextMenu();
+
+        Menu lentControllerParentMenu = new Menu("Изменение ячейки");
+        MenuItem addTextMenuItem = new MenuItem("Добавить");
+        MenuItem clearTextMenuItem = new MenuItem("Удалить");
+        MenuItem editTextMenuItem = new MenuItem("Изменить");
+        SeparatorMenuItem separatorMenuItem = new SeparatorMenuItem();
+        MenuItem makeCurrentTextMenuItem = new MenuItem("Сделать текущей");
+
+        lentControllerParentMenu.getItems().addAll(addTextMenuItem,
+                clearTextMenuItem,
+                editTextMenuItem,
+                separatorMenuItem,
+                makeCurrentTextMenuItem);
+
+        contextMenuLentController.getItems().add(lentControllerParentMenu);
+
+        lentTable.setOnContextMenuRequested(event -> {
+            contextMenuLentController.show(lentTable, event.getScreenX(), event.getScreenY());
+        });
+
+        addTextMenuItem.setOnAction(event -> {
+            //проверка превышения максимального лимита - 200
+                try {
+                    controller.addLentItemViaContextMenu();
+                } catch (IndexOfLentHeaderOutOfBoundException e) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR, "Индекс пишущей головки находится за" +
+                            "\n допустимыми пределами");
+                    alert.showAndWait();
+                }
+                currentLentTable.filler(controller.getLentData());
+                currentLentTable.update();
+
+        });
+
+        clearTextMenuItem.setOnAction(event -> {
+            try {
+                controller.clearLentItemViaContextMenu();
+            } catch (MinimumLentSizeException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Минимальный размер длины ленты - 100");
+                alert.showAndWait();
+            }
+            currentLentTable.filler(controller.getLentData());
+            currentLentTable.update();
+        });
+
+        editTextMenuItem.setOnAction(event -> {
+            TextInputDialog dialog = new TextInputDialog();
+            dialog.setHeaderText("Введите символ");
+            dialog.showAndWait().ifPresentOrElse(
+                    result -> {
+                        try {
+                            controller.editLentItemViaContextMenu(result);
+                        } catch (IncorrectLentSymbolEnteredException e) {
+                            Alert alert = new Alert(Alert.AlertType.ERROR, "Введен некорректный символ");
+                            alert.showAndWait();
+                        }
+                        currentLentTable.filler(controller.getLentData());
+                        currentLentTable.update();
+                    },
+                    () -> System.err.println("System error"));
+        });
+
+        makeCurrentTextMenuItem.setOnAction(event -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Это может повлечь множество ошибок во время" +
+                    "\n выполнения алгоритма. Вы уверены?");
+            if (alert.showAndWait().get() == ButtonType.OK) {
+                controller.getCurrentPosition().setCurrentLentColumn(
+                        lentTable.getFocusModel().getFocusedCell().getColumn());
+            }
+        });
+    }
+
+    private void initOptionSetter() {
+        ToggleGroup group = new ToggleGroup();
+
+        checkerOn.setToggleGroup(group);
+        checkerOff.setToggleGroup(group);
+    }
+
+    //@FXML
+    /*public void aboutProgramMenuOnClick() {
+        myLaunch(programInfo);
+    }*/
+
+    //@FXML
+    /*public void infoAboutSystemMenuOnClick() {
+        myLaunch(systemInfo);
+    }*/
 }

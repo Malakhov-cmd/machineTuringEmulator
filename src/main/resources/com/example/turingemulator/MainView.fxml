@@ -23,7 +23,7 @@
                     <Menu fx:id="includeAlgorithmMenu" text="Встроенные алгоритмы">
                         <MenuItem fx:id="plusMenu" text="Сложение">
                         </MenuItem>
-                        <MenuItem fx:id="NODMenu" text="НОД">
+                        <MenuItem fx:id="multyMenu" text="Умножение">
                         </MenuItem>
                     </Menu>
                     <MenuItem fx:id="fileIncludeMenu" text="Файл">
@@ -104,7 +104,7 @@
                         </padding>
                     </Label>
                     <Slider fx:id="timeDelay" disable="true" max="1" min="0.15" prefHeight="31.0" prefWidth="98.0" showTickLabels="true" showTickMarks="true" />
-                    <Label fx:id="sliderValue" alignment="CENTER" prefHeight="17.0" prefWidth="97.0" text="Value: " textAlignment="CENTER" textFill="#8a8484" visible="false">
+                    <Label fx:id="sliderValue" alignment="CENTER" prefHeight="17.0" prefWidth="97.0" text="Значение: " textAlignment="CENTER" textFill="#8a8484" visible="false">
                         <font>
                             <Font name="Calibri Light" size="11.0" />
                         </font>
@@ -191,9 +191,9 @@
     <HBox prefHeight="153.0" prefWidth="624.0" GridPane.RowSpan="1" GridPane.columnIndex="0" GridPane.columnSpan="7" GridPane.rowIndex="4">
 
         <HBox prefHeight="138.0" prefWidth="287.0">
-            <HBox alignment="TOP_CENTER" blendMode="DARKEN" depthTest="ENABLE" prefHeight="138.0" prefWidth="275.0">
+            <HBox alignment="TOP_CENTER" blendMode="DARKEN" depthTest="ENABLE" prefHeight="138.0" prefWidth="287.0">
                 <children>
-                    <Label blendMode="DARKEN" depthTest="ENABLE" prefHeight="25.0" prefWidth="86.0" text="Сохранять трассу">
+                    <Label blendMode="DARKEN" depthTest="ENABLE" prefHeight="25.0" prefWidth="101.0" text="Сохранять трассу">
                         <font>
                             <Font name="Calibri Light Italic" size="12.0" />
                         </font>
@@ -202,7 +202,7 @@
                   </opaqueInsets>
                     </Label>
                     <CheckBox fx:id="saveStackTraceCheckBox" prefHeight="28.0" prefWidth="16.0" />
-                    <Button fx:id="openTrace" alignment="CENTER" blendMode="OVERLAY" cache="true" mnemonicParsing="false" prefHeight="25.0" prefWidth="109.0" text="Показать трассу">
+                    <Button fx:id="openTrace" alignment="CENTER" blendMode="OVERLAY" cache="true" mnemonicParsing="false" prefHeight="25.0" prefWidth="108.0" text="Показать трассу">
                         <HBox.margin>
                             <Insets left="15.0" />
                         </HBox.margin>

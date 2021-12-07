@@ -45,7 +45,7 @@ public class Trace extends Application implements Initializable {
         stage.initModality(Modality.WINDOW_MODAL);
 
         FXMLLoader loader = new FXMLLoader();
-        URL xmlUrl = getClass().getResource("/FXML/traceVishual.fxml");
+        URL xmlUrl = getClass().getResource("/com/example/turingemulator/TraceView.fxml");
         loader.setLocation(xmlUrl);
         Parent root = null;
         try {
@@ -59,13 +59,14 @@ public class Trace extends Application implements Initializable {
 
         assert root != null;
         Scene scene = new Scene(root);
-        stage.getIcons().add(new Image("/IMG/icon.png"));
+        stage.getIcons().add(new Image("/icon.png"));
         stage.setTitle("Trace");
         stage.setScene(scene);
         stage.setResizable(false);
 
         stage.setOnCloseRequest(event -> {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "All stack trace will be deleted. Are you sure?");
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Вся трассировка стека будет удалена." +
+                    "\n Вы уверены?");
             if (alert.showAndWait().get() == ButtonType.OK) {
                 stringBuilder.setLength(0);
                 isOpened = false;
@@ -97,10 +98,56 @@ public class Trace extends Application implements Initializable {
         return isOpened;
     }
 
-    private class dysplayTrace extends Task<Void> {
+    private Task<Void> task;
 
-        public dysplayTrace() {
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        tempSTR = stackTraceTextArea.getText();
+        startDraw();
+
+        clearTrace.setOnAction(event -> {
+            stringBuilder.setLength(0);
+        });
+
+        saveTrace.setOnAction(event -> {
+            FileChooser fileChooser = new FileChooser();
+
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
+            fileChooser.getExtensionFilters().add(extFilter);
+
+            File file = fileChooser.showSaveDialog(getPrimaryStage());
+
+            if (file != null) {
+                saveTextToFile(stackTraceTextArea.getText(), file);
+            }
+        });
+    }
+
+    private void saveTextToFile(String content, File file) {
+        try {
+            PrintWriter writer;
+            writer = new PrintWriter(file);
+            writer.println(content);
+            writer.close();
+        } catch (IOException ex) {
+            System.out.println();
         }
+    }
+
+    public void startDraw() {
+        if (task != null && task.isRunning()) {
+            task.cancel();
+        }
+
+        task = new dysplayTrace();
+        Thread thread = new Thread(task);
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+
+    private class dysplayTrace extends Task<Void> {
+        public dysplayTrace() {}
 
         @Override
         protected Void call() {
@@ -138,15 +185,15 @@ public class Trace extends Application implements Initializable {
                 }
                 if (stopByUser) {
                     Platform.runLater(() -> {
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION, "Process of working algorithm is stop by user");
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION, "Процесс работы алгоритма останавлен пользователем");
                         alert.showAndWait();
                     });
                     Date date = new Date();
-                    stringBuilder.append("Process of working algorithm is stop by user at ").append(date).append("\n");
+                    stringBuilder.append("Процесс работы алгоритма останавлен пользователем в ").append(date).append("\n");
                 }
                 Date date = new Date();
-                stringBuilder.append("Algorithm is over at ").append(date).append("\n");
-                stringBuilder.append("NEW ITERATION" + "\n");
+                stringBuilder.append("Завершение выполнения алгоритма в ").append(date).append("\n");
+                stringBuilder.append("Новая итерация " + "\n");
                 stackTraceTextArea.setText(stringBuilder.toString());
 
                 ended = false;
@@ -166,54 +213,6 @@ public class Trace extends Application implements Initializable {
         @Override
         protected void updateMessage(String message) {
             super.updateMessage(message);
-        }
-    }
-
-    private Task<Void> task;
-
-    public void startDraw() {
-        if (task != null && task.isRunning()) {
-            task.cancel();
-        }
-
-        task = new dysplayTrace();
-        Thread thread = new Thread(task);
-        thread.setDaemon(true);
-        thread.start();
-    }
-
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        tempSTR = stackTraceTextArea.getText();
-        startDraw();
-
-        clearTrace.setOnAction(event -> {
-            stringBuilder.setLength(0);
-        });
-
-        saveTrace.setOnAction(event -> {
-            FileChooser fileChooser = new FileChooser();
-
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
-            fileChooser.getExtensionFilters().add(extFilter);
-
-            File file = fileChooser.showSaveDialog(getPrimaryStage());
-
-            if (file != null) {
-                saveTextToFile(stackTraceTextArea.getText(), file);
-            }
-        });
-    }
-
-    private void saveTextToFile(String content, File file) {
-        try {
-            PrintWriter writer;
-            writer = new PrintWriter(file);
-            writer.println(content);
-            writer.close();
-        } catch (IOException ex) {
-            System.out.println();
         }
     }
 }
