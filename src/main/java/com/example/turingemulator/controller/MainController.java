@@ -25,6 +25,7 @@ import com.example.turingemulator.exception.deleteRow.SystemSymbolUsageException
 import com.example.turingemulator.exception.lentCellOperation.MinimumLentSizeException;
 import com.example.turingemulator.exception.operands.IncreaseMaxValueException;
 import com.example.turingemulator.exception.operands.NonDigitValuesException;
+import com.example.turingemulator.view.ProgramInfo;
 import com.example.turingemulator.view.Trace;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -53,6 +54,7 @@ public class MainController {
 
     boolean algorithmStarted = false;
     private Trace trace = new Trace();
+    private ProgramInfo programInfo = new ProgramInfo();
 
     private ContextMenuService contextMenuService = new ContextMenuService();
     private AnalizatorService analizatorService = new AnalizatorService(this);
@@ -648,7 +650,7 @@ public class MainController {
 
     public void formedAndSavingLentData(File file){
         if (file != null) {
-            fileProcessingService.saveLentData(lentData.toString(), file);
+            fileProcessingService.saveLentData( file);
         }
     }
 
@@ -698,5 +700,9 @@ public class MainController {
             int column = view.lentTable.getFocusModel().getFocusedCell().getColumn();
             lentData.getListLentData().set(column, newValue);
         }
+    }
+
+    public void showProgramInfo(){
+        myLaunch(programInfo);
     }
 }

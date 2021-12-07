@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,11 +20,19 @@ public class FileProcessingService {
         this.mainController = mainController;
     }
 
-    public void saveLentData(String content, File file) {
+    public void saveLentData(File file) {
+        StringBuilder builder = new StringBuilder();
+        List<String> lentList = mainController.getLentData().getListLentData();
+        for (int i = 0; i < 201; i++) {
+            if (i > 101 && lentList.get(i).equals("_")) {
+                break;
+            }
+            builder.append(lentList.get(i));
+        }
         try {
             PrintWriter writer;
             writer = new PrintWriter(file);
-            writer.println(content);
+            writer.println(builder);
             writer.close();
         } catch (IOException ex) {
             System.err.println("System error");
@@ -54,12 +63,14 @@ public class FileProcessingService {
     public void analizeFileSTR(String fileSTR) {
         if (fileSTR != null) {
             if (fileSTR.charAt(0) != 'q') {
-                System.out.println(fileSTR.length());
                 for (int i = 0; i < fileSTR.length() - 2; i++) {
-                    System.out.println(fileSTR.charAt(i));
                     mainController.getLentData().getListLentData().set((i), String.valueOf(fileSTR.charAt(i)));
+                    if (i > 101){
+                        mainController.getView().listLentColumns
+                                .get(i).setVisible(true);
+                    }
                 }
-
+                mainController.getLentData().setEnder(fileSTR.length() - 2);
                 mainController.getView().currentLentTable.filler(mainController.getLentData());
                 mainController.getView().currentLentTable.update();
             } else {

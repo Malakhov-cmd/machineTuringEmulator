@@ -8,6 +8,7 @@ import javafx.concurrent.Task;
 import javafx.scene.control.Alert;
 
 import java.util.Date;
+import java.util.Objects;
 
 public class StepTaskService extends Task<Void> {
     private MainController mainController;
@@ -41,6 +42,8 @@ public class StepTaskService extends Task<Void> {
             }
             Platform.runLater(() -> {
                 try {
+                    String lentDataBefore = mainController.getLentData().getAllSymbols();
+
                     //получили текущее правило
                     Rule rowFrom = mainController.getRowConditions().get(mainController.getCurrentPosition().getCurrentRowCondition())
                             .getListRules().get(mainController.getCurrentPosition().getCurrentColumnCondition() - 1);
@@ -203,6 +206,8 @@ public class StepTaskService extends Task<Void> {
                             mainController.getView().colorized();
                         }
                     }
+                    String lentDataAfter = mainController.getLentData().getAllSymbols();
+                    lentActuatorGraphical(lentDataBefore, lentDataAfter);
                 } catch (Exception e) {
                     mainController.getCurrentPosition().setCurrentLentColumn(0);
                     mainController.getCurrentPosition().setCurrentRowCondition(0);
@@ -232,5 +237,21 @@ public class StepTaskService extends Task<Void> {
     @Override
     protected void updateMessage(String message) {
         super.updateMessage(message);
+    }
+
+    private void lentActuatorGraphical(String oldValue, String newValue) {
+        if (!Objects.equals(oldValue, newValue)) {
+            for (int i = 0; i < 200; i++) {
+                int tmpOld = oldValue.charAt(i);
+                int tmpNew = newValue.charAt(i);
+                if (tmpNew != tmpOld && i > 100) {
+                    mainController.getView().listLentColumns.get(mainController.getLentData().getEnder()).setVisible(true);
+                    mainController.getLentData().setEnder(mainController.getLentData().getEnder() + 1);
+
+                    mainController.getView().currentLentTable.filler(mainController.getLentData());
+                    mainController.getView().currentLentTable.update();
+                }
+            }
+        }
     }
 }

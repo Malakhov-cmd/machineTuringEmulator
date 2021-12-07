@@ -891,10 +891,10 @@ public class MainView extends Application implements Initializable {
         checkerOff.setToggleGroup(group);
     }
 
-    //@FXML
-    /*public void aboutProgramMenuOnClick() {
-        myLaunch(programInfo);
-    }*/
+    @FXML
+    public void aboutProgramMenuOnClick() {
+        controller.showProgramInfo();
+    }
 
     //@FXML
     /*public void infoAboutSystemMenuOnClick() {

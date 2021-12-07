@@ -39,7 +39,7 @@
             <Menu text="Информация">
                 <MenuItem fx:id="infoAboutSystemMenu" text="Сведения о системе">
                 </MenuItem>
-                <MenuItem fx:id="aboutProgramMenuItem" text="О программе">
+                <MenuItem fx:id="aboutProgramMenuItem" text="О программе" onAction="#aboutProgramMenuOnClick">
                 </MenuItem>
             </Menu>
             <Menu fx:id="optionsMenu" text="Настройки">

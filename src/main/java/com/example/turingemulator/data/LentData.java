@@ -46,4 +46,13 @@ public class LentData {
         }
         return sb.toString();
     }
+
+    public String getAllSymbols()
+    {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < 201; i++) {
+            builder.append(listLentData.get(i));
+        }
+        return builder.toString();
+    }
 }

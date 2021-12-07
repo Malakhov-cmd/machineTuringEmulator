@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="400.0" fx:controller="com.example.turingemulator.view.ProgramInfo" prefWidth="604.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+       <Label alignment="CENTER" layoutX="191.0" layoutY="14.0" prefHeight="35.0" prefWidth="237.0" text="О программе" textAlignment="CENTER">
+           <font>
+               <Font name="Book Antiqua Italic" size="15.0" />
+           </font>
+       </Label>
+      <Label alignment="TOP_LEFT" layoutX="79.0" layoutY="87.0" prefHeight="25.0" prefWidth="266.0" text="Самарский государственный университет" wrapText="true" />
+      <Label alignment="TOP_LEFT" layoutX="79.0" layoutY="113.0" prefHeight="25.0" prefWidth="266.0" text="Моделирование машины Тьюринга" wrapText="true" />
+      <Label alignment="TOP_LEFT" layoutX="79.0" layoutY="138.0" prefHeight="25.0" prefWidth="266.0" text="Преподаватель: Зеленко Лариса Сергеевна" wrapText="true" />
+      <Label alignment="TOP_LEFT" layoutX="79.0" layoutY="163.0" prefHeight="25.0" prefWidth="496.0" text="ФИО разработчиков: Малахов Георгий Сергеевич, Вашуркина Вероника Александровна" wrapText="true" />
+      <Label alignment="TOP_LEFT" layoutX="79.0" layoutY="188.0" prefHeight="25.0" prefWidth="496.0" text="Группа: 6402-090301D" wrapText="true" />
+      <Label alignment="TOP_LEFT" layoutX="79.0" layoutY="229.0" prefHeight="25.0" prefWidth="496.0" text="Версия: 1.0" wrapText="true" />
+      <Label alignment="TOP_LEFT" layoutX="79.0" layoutY="254.0" prefHeight="25.0" prefWidth="496.0" text="Все права защищены, при использовании в коммерческих целях требуется ссылка на " wrapText="true" />
+      <Label alignment="TOP_LEFT" layoutX="79.0" layoutY="272.0" prefHeight="25.0" prefWidth="496.0" text="источник." wrapText="true" />
+      <Button fx:id="closeBtn" layoutX="526.0" layoutY="318.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="43.0" text="Ok" />
+      <Line endX="503.75732421875" endY="3.0517578125E-5" layoutX="102.0" layoutY="360.0" startX="-100.0" strokeWidth="6.0">
+         <fill>
+            <LinearGradient endX="1.0" endY="1.0">
+               <stops>
+                  <Stop>
+                     <color>
+                        <Color />
+                     </color>
+                  </Stop>
+                  <Stop offset="1.0">
+                     <color>
+                        <Color red="1.0" green="1.0" blue="1.0" />
+                     </color>
+                  </Stop>
+               </stops>
+            </LinearGradient>
+         </fill>
+      </Line>
+   </children>
+</AnchorPane>
