@@ -26,6 +26,7 @@ import com.example.turingemulator.exception.lentCellOperation.MinimumLentSizeExc
 import com.example.turingemulator.exception.operands.IncreaseMaxValueException;
 import com.example.turingemulator.exception.operands.NonDigitValuesException;
 import com.example.turingemulator.view.ProgramInfo;
+import com.example.turingemulator.view.SystemInfo;
 import com.example.turingemulator.view.Trace;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -55,6 +56,7 @@ public class MainController {
     boolean algorithmStarted = false;
     private Trace trace = new Trace();
     private ProgramInfo programInfo = new ProgramInfo();
+    private SystemInfo systemInfo = new SystemInfo();
 
     private ContextMenuService contextMenuService = new ContextMenuService();
     private AnalizatorService analizatorService = new AnalizatorService(this);
@@ -704,5 +706,9 @@ public class MainController {
 
     public void showProgramInfo(){
         myLaunch(programInfo);
+    }
+
+    public void showSystemInfo() {
+        myLaunch(systemInfo);
     }
 }

@@ -896,8 +896,8 @@ public class MainView extends Application implements Initializable {
         controller.showProgramInfo();
     }
 
-    //@FXML
-    /*public void infoAboutSystemMenuOnClick() {
-        myLaunch(systemInfo);
-    }*/
+    @FXML
+    public void infoAboutSystemMenuOnClick() {
+        controller.showSystemInfo();
+    }
 }

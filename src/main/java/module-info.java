@@ -5,6 +5,7 @@ module com.example.turingemulator {
     requires org.controlsfx.controls;
     requires com.dlsc.formsfx;
     requires org.kordamp.ikonli.javafx;
+    requires javafx.web;
 
     opens com.example.turingemulator to javafx.fxml;
     exports com.example.turingemulator;
