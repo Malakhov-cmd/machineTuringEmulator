@@ -7,6 +7,8 @@ import com.example.turingemulator.controller.updaters.RuleUpdater;
 import com.example.turingemulator.data.LentData;
 import com.example.turingemulator.data.RowCondition;
 import com.example.turingemulator.exception.*;
+import com.example.turingemulator.exception.file.FileDoesntExist;
+import com.example.turingemulator.exception.file.IncorrectFileData;
 import com.example.turingemulator.exception.lentCellOperation.IncorrectLentSymbolEnteredException;
 import com.example.turingemulator.exception.lentCellOperation.IndexOfLentHeaderOutOfBoundException;
 import com.example.turingemulator.exception.addRow.AddingIncorrectSymbolException;
@@ -144,7 +146,7 @@ public class MainView extends Application implements Initializable {
 
         stage.setScene(scene);
         stage.getIcons().add(new Image("/icon.png"));
-        stage.setTitle("Turing Machine Simulation");
+        stage.setTitle("Машина Тьюринга");
         stage.setResizable(false);
         stage.show();
     }
@@ -173,19 +175,32 @@ public class MainView extends Application implements Initializable {
 
         controller = new MainController(this, lentData, rowConditions, currentPosition);
 
+        lentHandler();
+        algorithmHandler();
+        addColumnFromRightSide();
+    }
+
+    private void lentHandler() {
         EventHandler<TableColumn.CellEditEvent<LentData, String>> cellEditEventEventHandler = event -> {
             TablePosition<LentData, String> pos = event.getTablePosition();
 
             try {
                 controller.commitLentTableCell(event.getNewValue(), pos.getColumn());
             } catch (LentInputException e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "Пожалуйста введите корректные данные");
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Неверные данные, возможно такого символа нет в состояниях");
                 alert.showAndWait();
             }
             currentLentTable.filler(controller.getLentData());
             currentLentTable.update();
         };
 
+        for (TableColumn column :
+                listLentColumns) {
+            column.setOnEditCommit(cellEditEventEventHandler);
+        }
+    }
+
+    private void algorithmHandler() {
         EventHandler<TableColumn.CellEditEvent<RowCondition, String>> cellEditEventEventHandlerRules = event -> {
             TablePosition<RowCondition, String> pos = event.getTablePosition();
             String newValue = event.getNewValue();
@@ -193,17 +208,12 @@ public class MainView extends Application implements Initializable {
             try {
                 controller.commitRowConditionTableCell(newValue, pos.getColumn(), pos.getRow());
             } catch (RowConditionCellException e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "Пожалуйста, введите корректные данные");
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Обнаружены синтаксические ошибки");
                 alert.showAndWait();
             }
             currentRuleTable.filler(controller.getRowConditions());
             currentRuleTable.update();
         };
-        addColumnFromRightSide();
-        for (TableColumn column :
-                listLentColumns) {
-            column.setOnEditCommit(cellEditEventEventHandler);
-        }
 
         for (TableColumn column :
                 listConditionsColumns) {
@@ -230,6 +240,8 @@ public class MainView extends Application implements Initializable {
             lentTable.getColumns().add(column);
         }
         lentTable.setItems(lentDataOserver);
+
+        lentHandler();
     }
 
     private void initRowConditionsGraphical() {
@@ -284,6 +296,8 @@ public class MainView extends Application implements Initializable {
         rowConditions.add(equality);
 
         mapConditionTable.setItems(rulesDataOserver);
+
+        algorithmHandler();
 
         currentRuleTable.filler(rowConditions);
         currentRuleTable.update();
@@ -345,9 +359,8 @@ public class MainView extends Application implements Initializable {
                         try {
                             controller.addRow(result);
                         } catch (AddingIncorrectSymbolException e) {
-                            Alert alert = new Alert(Alert.AlertType.ERROR, "Пожалуйста, введите правильные данные или" +
-                                    "\n удалите одну строку, если количество строк увеличится" +
-                                    "\n на 5");
+                            Alert alert = new Alert(Alert.AlertType.ERROR, "Пожалуйста ебедитесь в корректности введенного символа" + "\n" +
+                                    "или удалите один символ, если их колличество ровняется 5");
                             alert.showAndWait();
                         } catch (AlreadyBeingInSymbolsList alreadyBeingInSymbolsList) {
                             Alert alert = new Alert(Alert.AlertType.ERROR, "Символ уже находится в списке");
@@ -381,7 +394,7 @@ public class MainView extends Application implements Initializable {
 
         addFromRightTextMenuItem.setOnAction(event -> {
             //если меньше 20 столбцов
-            if (controller.getRowConditions().get(0).getEnderIndex() < 19) {
+            if (controller.getRowConditions().get(0).getEnderIndex() < 20) {
                 //например 2 столбца
                 int endedPoint = controller.getRowConditions().get(0).getEnderIndex();
 
@@ -403,7 +416,7 @@ public class MainView extends Application implements Initializable {
         });
 
         addFromLeftTextMenuItem.setOnAction(event -> {
-            if (controller.getRowConditions().get(0).getEnderIndex() < 19) {
+            if (controller.getRowConditions().get(0).getEnderIndex() < 20) {
                 //например 2 столбца
                 int endedPoint = controller.getRowConditions().get(0).getEnderIndex();
 
@@ -450,7 +463,7 @@ public class MainView extends Application implements Initializable {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "Удаление последнего столбца недопустимо");
                 alert.showAndWait();
             } catch (MinimumColumnSize e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "Минимальное количество столбов должно ровняться двум");
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Минимальное количество столбцов должно ровняться трем");
                 alert.showAndWait();
             }
         });
@@ -549,7 +562,7 @@ public class MainView extends Application implements Initializable {
             try {
                 controller.applyOperandWay(aValueInputted.getText(), bValueInputted.getText());
             } catch (IncreaseMaxValueException e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "Максимальное значение операнда составляет 50");
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Максимальное значение операнда составляет 13");
                 alert.showAndWait();
             } catch (NonDigitValuesException e) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "Введите корректные значение операндов -" +
@@ -622,7 +635,6 @@ public class MainView extends Application implements Initializable {
             controller.stop();
         });
     }
-
 
     public void colorized() {
         for (TableColumn lentColumn :
@@ -701,7 +713,6 @@ public class MainView extends Application implements Initializable {
     }
 
     public void addColumnFromRightSide() {
-        //например 2 столбца
         int endedPoint = controller.getRowConditions().get(0).getEnderIndex();
 
         TableColumn openedColumn = listConditionsColumns.get(endedPoint + 1);
@@ -772,7 +783,15 @@ public class MainView extends Application implements Initializable {
 
             File file = fileChooser.showSaveDialog(pStage);
 
-            controller.formedAndSavingLentData(file);
+            try {
+                controller.formedAndSavingLentData(file);
+            } catch (FileDoesntExist e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Файл с заданным именем не существует");
+                alert.showAndWait();
+            } catch (IncorrectFileData e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Файл поврежден");
+                alert.showAndWait();
+            }
         });
 
         saveAlgorithmMenu.setOnAction(event -> {
@@ -784,21 +803,40 @@ public class MainView extends Application implements Initializable {
             File file = fileChooser.showSaveDialog(pStage);
 
             if (file != null) {
-                controller.formedStringPresenterOfRowCondition(file);
+                try {
+                    controller.formedStringPresenterOfRowCondition(file);
+                } catch (FileDoesntExist e) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR, "Файл с заданным именем не существует");
+                    alert.showAndWait();
+                } catch (IncorrectFileData e) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR, "Файл поврежден");
+                    alert.showAndWait();
+                }
             }
         });
 
-        FileChooser fileToLoad = new FileChooser();
-        configuringFileChooser(fileToLoad);
-
         fileIncludeMenu.setOnAction(event -> {
+            FileChooser fileToLoad = new FileChooser();
+            configuringFileChooser(fileToLoad);
+
             File uploadFile = fileToLoad.showOpenDialog(pStage);
-            controller.readingAndAnalyzingFiles(uploadFile);
+            try {
+                controller.readingAndAnalyzingFiles(uploadFile);
+            } catch (FileDoesntExist e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Файл с заданным именем не существует");
+                alert.showAndWait();
+            } catch (IncorrectFileData e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Файл поврежден");
+                alert.showAndWait();
+            }
+
+            currentRuleTable.filler(controller.getRowConditions());
+            currentRuleTable.update();
         });
     }
 
     private void configuringFileChooser(FileChooser fileChooser) {
-        fileChooser.setTitle("Select Pictures");
+        fileChooser.setTitle("Select");
 
         fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
 
@@ -837,8 +875,7 @@ public class MainView extends Application implements Initializable {
                 try {
                     controller.addLentItemViaContextMenu();
                 } catch (IndexOfLentHeaderOutOfBoundException e) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR, "Индекс пишущей головки находится за" +
-                            "\n допустимыми пределами");
+                    Alert alert = new Alert(Alert.AlertType.ERROR, "Максимальный размер длины ленты - 200");
                     alert.showAndWait();
                 }
                 currentLentTable.filler(controller.getLentData());
@@ -865,7 +902,7 @@ public class MainView extends Application implements Initializable {
                         try {
                             controller.editLentItemViaContextMenu(result);
                         } catch (IncorrectLentSymbolEnteredException e) {
-                            Alert alert = new Alert(Alert.AlertType.ERROR, "Введен некорректный символ");
+                            Alert alert = new Alert(Alert.AlertType.ERROR, "Неверные данные, возможно такого символа нет в алфавите");
                             alert.showAndWait();
                         }
                         currentLentTable.filler(controller.getLentData());

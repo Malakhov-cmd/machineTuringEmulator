@@ -69,41 +69,42 @@ public class AlgorithmsService {
 
     private void coreAlgorithm() {
         try {
-        String lentDataBefore = mainController.getLentData().getAllSymbols();
+            String lentDataBefore = mainController.getLentData().getAllSymbols();
 
-        //получили текущее правило
-        Rule rowFrom = mainController.getRowConditions().get(mainController.getCurrentPosition().getCurrentRowCondition())
-                .getListRules().get(mainController.getCurrentPosition().getCurrentColumnCondition() - 1);
+            //получили текущее правило
+            Rule rowFrom = mainController.getRowConditions().get(mainController.getCurrentPosition().getCurrentRowCondition())
+                    .getListRules().get(mainController.getCurrentPosition().getCurrentColumnCondition() - 1);
 
-        mainView.unColorized();
+            mainView.unColorized();
 
-        //на какое состояние перейти
-        String conditionTo = rowFrom.getConditionTo();
-        int newConditionInt;
+            //на какое состояние перейти
+            String conditionTo = rowFrom.getConditionTo();
+            int newConditionInt;
 
-        if (conditionTo.length() == 2) {
-            newConditionInt = Integer.parseInt(conditionTo.substring(conditionTo.length() - 1)) + 1;
-        } else {
-            newConditionInt = Integer.parseInt(conditionTo.substring(conditionTo.length() - 2)) + 1;
-        }
-        //проверка на несуществующие состояния
-        if (newConditionInt < 0 || newConditionInt > 20) {
-            error = true;
-
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Неверный номер состояния. Ваши номера правил" +
-                    "\n должны быть в диапазоне от 0 до 20");
-            alert.showAndWait();
-
-            if (mainView.saveStackTraceCheckBox.isSelected()) {
-                Date date = new Date();
-                mainController.currentLentState.append(mainController.lentStateCounter).append(" Неверный номер состояния в ").append(date).append("\n");
-                mainController.lentStateCounter++;
-                Trace.getStringBuilder(mainController.currentLentState);
+            if (conditionTo.length() == 2) {
+                newConditionInt = Integer.parseInt(conditionTo.substring(conditionTo.length() - 1)) + 1;
+            } else {
+                newConditionInt = Integer.parseInt(conditionTo.substring(conditionTo.length() - 2)) + 1;
             }
-        } else {
-            //проверка на неоткрытые состояния
-            if (newConditionInt > mainController.getRowConditions().get(0).getEnderIndex() - 1) {
-                if (newConditionInt - 1 == mainController.getRowConditions().get(0).getEnderIndex() - 1) {
+            //проверка на несуществующие состояния
+            if (newConditionInt < 0 || newConditionInt > 20) {
+                error = true;
+
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Неверный номер состояния. Ваши номера правил" +
+                        "\n должны быть в диапазоне от 0 до 20");
+                alert.showAndWait();
+
+                if (mainView.saveStackTraceCheckBox.isSelected()) {
+                    Date date = new Date();
+                    mainController.currentLentState.append(mainController.lentStateCounter).append(" Неверный номер состояния в ").append(date).append("\n");
+                    mainController.lentStateCounter++;
+                    Trace.getStringBuilder(mainController.currentLentState);
+                }
+            } else {
+                //проверка на неоткрытые состояния
+                if (newConditionInt > mainController.getRowConditions().get(0).getEnderIndex() ) {
+                    //TODO мб оставить без минус 1 ВНИМАНИЕ БЫЛО if (newConditionInt - 1 > mainController.getRowConditions().get(0).getEnderIndex() - 1)
+                /*if (newConditionInt - 1 == mainController.getRowConditions().get(0).getEnderIndex() - 1) {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION, "Алгоритм успешно завершен");
                     alert.showAndWait();
 
@@ -122,11 +123,9 @@ public class AlgorithmsService {
                         Trace.getEnded(true);
                     }
 
-                } else {
+                } else {*/
                     error = true;
 
-                    Alert alert = new Alert(Alert.AlertType.ERROR, "Сслыка на несуществующее состояние");
-                    alert.showAndWait();
 
                     if (mainView.saveStackTraceCheckBox.isSelected()) {
                         Date date = new Date();
@@ -134,108 +133,132 @@ public class AlgorithmsService {
                         mainController.lentStateCounter++;
                         Trace.getStringBuilder(mainController.currentLentState);
                     }
-                }
-            } else {
-                mainController.getCurrentPosition().setCurrentColumnCondition(newConditionInt);
 
-                String symbolChangeTo = rowFrom.getSymbolChangeTo();
-
-                mainController.getLentData().getListLentData().set(mainController.getCurrentPosition().getCurrentLentColumn(), symbolChangeTo);
-
-                mainView.currentLentTable.filler(mainController.getLentData());
-                mainView.currentLentTable.update();
-
-                if (mainView.saveStackTraceCheckBox.isSelected()) {
-                    mainController.currentLentState.append(mainController.lentStateCounter).append(mainController.getLentData().toString()).append("\n");
-                    mainController.lentStateCounter++;
-                    Trace.getStringBuilder(mainController.currentLentState);
-                }
-
-                //куда передвинуть головку
-                String moveTo = rowFrom.getMoveTo();
-                if (moveTo.equals("R")) {
-                    mainController.getCurrentPosition().setCurrentLentColumn(
-                            mainController.getCurrentPosition().getCurrentLentColumn() + 1
-                    );
+                    Alert alert = new Alert(Alert.AlertType.ERROR, "Сслыка на несуществующее состояние");
+                    alert.showAndWait();
+                    //}
                 } else {
-                    if (moveTo.equals("L")) {
+                    mainController.getCurrentPosition().setCurrentColumnCondition(newConditionInt);
+
+                    String symbolChangeTo = rowFrom.getSymbolChangeTo();
+
+                    mainController.getLentData().getListLentData().set(mainController.getCurrentPosition().getCurrentLentColumn(), symbolChangeTo);
+
+                    mainView.currentLentTable.filler(mainController.getLentData());
+                    mainView.currentLentTable.update();
+
+                    if (mainView.saveStackTraceCheckBox.isSelected()) {
+                        mainController.currentLentState.append(mainController.lentStateCounter).append(mainController.getLentData().toString()).append("\n");
+                        mainController.lentStateCounter++;
+                        Trace.getStringBuilder(mainController.currentLentState);
+                    }
+
+                    //куда передвинуть головку
+                    String moveTo = rowFrom.getMoveTo();
+                    if (moveTo.equals("R")) {
                         mainController.getCurrentPosition().setCurrentLentColumn(
-                                mainController.getCurrentPosition().getCurrentLentColumn() - 1
+                                mainController.getCurrentPosition().getCurrentLentColumn() + 1
                         );
-                    }
-                }
-
-                //следующая строка
-                /*Проверка на выход за пределы ленты*/
-                String nextRow = null;
-                try {
-                    nextRow = mainController.getLentData().getListLentData().get(mainController.getCurrentPosition().getCurrentLentColumn());
-                } catch (IndexOutOfBoundsException e) {
-                    error = true;
-
-                    mainController.getCurrentPosition().setCurrentLentColumn(0);
-                    mainController.getCurrentPosition().setCurrentRowCondition(0);
-                    mainController.getCurrentPosition().setCurrentColumnCondition(1);
-
-                    Alert alert = new Alert(Alert.AlertType.ERROR, "Указатель ленты находится за пределами разрешенных значений");
-                    alert.showAndWait();
-
-                    if (mainView.saveStackTraceCheckBox.isSelected()) {
-                        Date date = new Date();
-                        mainController.currentLentState.append(mainController.lentStateCounter).append(" Указатель ленты находится за пределами разрешенных значений в ").append(date).append("\n");
-                        mainController.lentStateCounter++;
-                        Trace.getStringBuilder(mainController.currentLentState);
+                    } else {
+                        if (moveTo.equals("L")) {
+                            mainController.getCurrentPosition().setCurrentLentColumn(
+                                    mainController.getCurrentPosition().getCurrentLentColumn() - 1
+                            );
+                        }
                     }
 
-                    mainView.unColorized();
-                }
-                int nextRowInt = -1;
-                for (int i = 0; i < mainController.getRowConditions().size(); i++) {
-                    if (mainController.getRowConditions().get(i).getSymbolLine().equals(nextRow)) {
-                        mainController.getCurrentPosition().setCurrentRowCondition(i);
-                        nextRowInt = i;
+                    //следующая строка
+                    /*Проверка на выход за пределы ленты*/
+                    String nextRow = null;
+                    try {
+                        nextRow = mainController.getLentData().getListLentData().get(mainController.getCurrentPosition().getCurrentLentColumn());
+                    } catch (IndexOutOfBoundsException e) {
+                        error = true;
+
+                        mainController.getCurrentPosition().setCurrentLentColumn(0);
+                        mainController.getCurrentPosition().setCurrentRowCondition(0);
+                        mainController.getCurrentPosition().setCurrentColumnCondition(1);
+
+                        Alert alert = new Alert(Alert.AlertType.ERROR, "Указатель ленты находится за пределами разрешенных \n" +
+                                " значений");
+                        alert.showAndWait();
+
+                        if (mainView.saveStackTraceCheckBox.isSelected()) {
+                            Date date = new Date();
+                            mainController.currentLentState.append(mainController.lentStateCounter).append(" Указатель ленты находится за пределами разрешенных значений в ").append(date).append("\n");
+                            mainController.lentStateCounter++;
+                            Trace.getStringBuilder(mainController.currentLentState);
+                        }
+
+                        mainView.unColorized();
                     }
-                }
-
-                //проверка на то пустое ли следующее правило
-                Rule nextRule = null;
-                try {
-                    nextRule = mainController.getRowConditions().get(nextRowInt).getListRules().get(newConditionInt - 1);
-                } catch (IndexOutOfBoundsException e) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR, "Лента не может находиться левее нуля");
-                    alert.showAndWait();
-                }
-
-                boolean full = true;
-                if (nextRule.getConditionTo().equals(" ")
-                        || nextRule.getSymbolChangeTo().equals(" ")
-                        || nextRule.getMoveTo().equals(" ")) {
-                    full = false;
-                }
-                if (!full) {
-                    error = true;
-
-                    mainController.getCurrentPosition().setCurrentLentColumn(0);
-                    mainController.getCurrentPosition().setCurrentRowCondition(0);
-                    mainController.getCurrentPosition().setCurrentColumnCondition(1);
-
-                    Alert alert = new Alert(Alert.AlertType.ERROR, "Следующее правило не заполнено");
-                    alert.showAndWait();
-
-                    if (mainView.saveStackTraceCheckBox.isSelected()) {
-                        Date date = new Date();
-                        mainController.currentLentState.append(mainController.lentStateCounter).append(" Следующее правило было не заполнено в ").append(date).append("\n");
-                        mainController.lentStateCounter++;
-                        Trace.getStringBuilder(mainController.currentLentState);
+                    int nextRowInt = -1;
+                    for (int i = 0; i < mainController.getRowConditions().size(); i++) {
+                        if (mainController.getRowConditions().get(i).getSymbolLine().equals(nextRow)) {
+                            mainController.getCurrentPosition().setCurrentRowCondition(i);
+                            nextRowInt = i;
+                        }
                     }
 
-                    mainView.unColorized();
+                    //проверка на то пустое ли следующее правило
+                    Rule nextRule = null;
+                    try {
+                        nextRule = mainController.getRowConditions().get(nextRowInt).getListRules().get(newConditionInt - 1);
+                    } catch (IndexOutOfBoundsException e) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR, "Лента не может находиться левее нуля");
+                        alert.showAndWait();
+                    }
+
+                    boolean full = true;
+                    if (nextRule.getConditionTo().equals(" ")
+                            || nextRule.getSymbolChangeTo().equals(" ")
+                            || nextRule.getMoveTo().equals(" ")) {
+                        full = false;
+                    }
+                    if (newConditionInt - 1 == mainController.getRowConditions().get(0).getEnderIndex() - 1) {
+                        mainController.getCurrentPosition().setCurrentLentColumn(0);
+                        mainController.getCurrentPosition().setCurrentRowCondition(0);
+                        mainController.getCurrentPosition().setCurrentColumnCondition(1);
+                        mainController.getCurrentPosition().setFinished(true);
+
+                        if (mainController.getView().saveStackTraceCheckBox.isSelected()) {
+                            Date date = new Date();
+                            mainController.currentLentState.append(mainController.lentStateCounter).append(" Алгоритм успешно завершен в ").append(date).append("\n");
+                            Trace.getStringBuilder(mainController.currentLentState);
+
+                            mainController.lentStateCounter = 0;
+                            //Конец процесса
+                            Trace.getEnded(true);
+                        }
+
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION, "Алгоритм успешно завершен");
+                        alert.showAndWait();
+                    } else {
+                        if (!full) {
+                            error = true;
+
+                            mainController.getCurrentPosition().setCurrentLentColumn(0);
+                            mainController.getCurrentPosition().setCurrentRowCondition(0);
+                            mainController.getCurrentPosition().setCurrentColumnCondition(1);
+
+                            Alert alert = new Alert(Alert.AlertType.ERROR, "Следующее правило не заполнено");
+                            alert.showAndWait();
+
+                            if (mainView.saveStackTraceCheckBox.isSelected()) {
+                                Date date = new Date();
+                                mainController.currentLentState.append(mainController.lentStateCounter).append(" Следующее правило было не заполнено в ").append(date).append("\n");
+                                mainController.lentStateCounter++;
+                                Trace.getStringBuilder(mainController.currentLentState);
+                            }
+
+                            mainView.unColorized();
+                        }
+                    }
+                    mainView.colorized();
                 }
-                mainView.colorized();
             }
-        }
-        String lentDataAfter = mainController.getLentData().getAllSymbols();
-        lentActuatorGraphical(lentDataBefore, lentDataAfter);
+            String lentDataAfter = mainController.getLentData().getAllSymbols();
+            lentActuatorGraphical(lentDataBefore, lentDataAfter);
         } catch (Exception e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Что-то пошло не так." +
                     "\n Попробуйте включить анализатор в настройках");

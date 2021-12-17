@@ -8,7 +8,7 @@
 
 <AnchorPane prefHeight="400.0" fx:controller="com.example.turingemulator.view.ProgramInfo" prefWidth="604.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-       <Label alignment="CENTER" layoutX="191.0" layoutY="14.0" prefHeight="35.0" prefWidth="237.0" text="О программе" textAlignment="CENTER">
+       <Label alignment="CENTER" layoutX="191.0" layoutY="14.0" prefHeight="35.0" prefWidth="237.0" text="О разработчиках" textAlignment="CENTER">
            <font>
                <Font name="Book Antiqua Italic" size="15.0" />
            </font>

@@ -74,26 +74,8 @@ public class StepTaskService extends Task<Void> {
                         }
                     } else {
                         //проверка на неоткрытые состояния
-                        if (newConditionInt > mainController.getRowConditions().get(0).getEnderIndex() - 1) {
-                            if (newConditionInt - 1 == mainController.getRowConditions().get(0).getEnderIndex() - 1) {
-                                mainController.getCurrentPosition().setCurrentLentColumn(0);
-                                mainController.getCurrentPosition().setCurrentRowCondition(0);
-                                mainController.getCurrentPosition().setCurrentColumnCondition(1);
-                                mainController.getCurrentPosition().setFinished(true);
+                        if (newConditionInt > mainController.getRowConditions().get(0).getEnderIndex()) {
 
-                                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Алгоритм успешно завершен");
-                                alert.showAndWait();
-
-                                if (mainController.getView().saveStackTraceCheckBox.isSelected()) {
-                                    Date date = new Date();
-                                    mainController.currentLentState.append(mainController.lentStateCounter).append(" Алгоритм успешно завершен в ").append(date).append("\n");
-                                    Trace.getStringBuilder(mainController.currentLentState);
-
-                                    mainController.lentStateCounter = 0;
-                                    //Конец процесса
-                                    Trace.getEnded(true);
-                                }
-                            } else {
                                 error = true;
 
                                 Alert alert = new Alert(Alert.AlertType.ERROR, "Сслыка на несуществующее состояние");
@@ -105,7 +87,6 @@ public class StepTaskService extends Task<Void> {
                                     mainController.lentStateCounter++;
                                     Trace.getStringBuilder(mainController.currentLentState);
                                 }
-                            }
                         } else {
                             mainController.getCurrentPosition().setCurrentColumnCondition(newConditionInt);
 
@@ -184,26 +165,52 @@ public class StepTaskService extends Task<Void> {
                                     || nextRule.getMoveTo().equals(" ")) {
                                 full = false;
                             }
-                            if (!full) {
+                            if (newConditionInt - 1 == mainController.getRowConditions().get(0).getEnderIndex() - 1) {
+                                /*Alert alert = new Alert(Alert.AlertType.INFORMATION, "Алгоритм успешно завершен");
+                                alert.showAndWait();*/
+
+
                                 mainController.getCurrentPosition().setCurrentLentColumn(0);
                                 mainController.getCurrentPosition().setCurrentRowCondition(0);
                                 mainController.getCurrentPosition().setCurrentColumnCondition(1);
+                                mainController.getCurrentPosition().setFinished(true);
 
-                                error = true;
-
-                                Alert alert = new Alert(Alert.AlertType.ERROR, "Следующее правило не заполнено");
-                                alert.showAndWait();
-
-                                if (mainController.getView().saveStackTraceCheckBox.isSelected()) {
+                                if ( mainController.getView().saveStackTraceCheckBox.isSelected()) {
                                     Date date = new Date();
-                                    mainController.currentLentState.append(mainController.lentStateCounter).append(" Следующее правило было не заполнено в ").append(date).append("\n");
-                                    mainController.lentStateCounter++;
+                                    mainController.currentLentState.append(mainController.lentStateCounter).append(" Алгоритм успешно завершен в ").append(date).append("\n");
                                     Trace.getStringBuilder(mainController.currentLentState);
+
+                                    mainController.lentStateCounter = 0;
+                                    //Конец процесса
+                                    Trace.getEnded(true);
                                 }
 
-                                mainController.getView().unColorized();
+                                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Алгоритм успешно завершен");
+                                alert.showAndWait();
+                            } else {
+                                if (!full) {
+
+                                    mainController.getView().colorized();
+                                    mainController.getCurrentPosition().setCurrentLentColumn(0);
+                                    mainController.getCurrentPosition().setCurrentRowCondition(0);
+                                    mainController.getCurrentPosition().setCurrentColumnCondition(1);
+
+                                    error = true;
+
+                                    Alert alert = new Alert(Alert.AlertType.ERROR, "Следующее правило не заполнено");
+                                    alert.showAndWait();
+
+                                    if (mainController.getView().saveStackTraceCheckBox.isSelected()) {
+                                        Date date = new Date();
+                                        mainController.currentLentState.append(mainController.lentStateCounter).append(" Следующее правило было не заполнено в ").append(date).append("\n");
+                                        mainController.lentStateCounter++;
+                                        Trace.getStringBuilder(mainController.currentLentState);
+                                    }
+
+                                    mainController.getView().unColorized();
+                                }
                             }
-                            mainController.getView().colorized();
+                                mainController.getView().colorized();
                         }
                     }
                     String lentDataAfter = mainController.getLentData().getAllSymbols();

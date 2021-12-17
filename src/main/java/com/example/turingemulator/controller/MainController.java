@@ -9,9 +9,9 @@ import com.example.turingemulator.controller.updaters.PositionUpdater;
 import com.example.turingemulator.data.LentData;
 import com.example.turingemulator.data.RowCondition;
 import com.example.turingemulator.data.Rule;
-import com.example.turingemulator.exception.*;
-import com.example.turingemulator.exception.lentCellOperation.IncorrectLentSymbolEnteredException;
-import com.example.turingemulator.exception.lentCellOperation.IndexOfLentHeaderOutOfBoundException;
+import com.example.turingemulator.exception.EditFinalStateException;
+import com.example.turingemulator.exception.LentInputException;
+import com.example.turingemulator.exception.RowConditionCellException;
 import com.example.turingemulator.exception.addRow.AddingIncorrectSymbolException;
 import com.example.turingemulator.exception.addRow.AlreadyBeingInSymbolsList;
 import com.example.turingemulator.exception.analizator.EmptyInitialRuleException;
@@ -22,6 +22,10 @@ import com.example.turingemulator.exception.deleteColumn.MinimumColumnSize;
 import com.example.turingemulator.exception.deleteRow.SymbolRowsUseInAnotherTerms;
 import com.example.turingemulator.exception.deleteRow.SymbolUseInLentData;
 import com.example.turingemulator.exception.deleteRow.SystemSymbolUsageException;
+import com.example.turingemulator.exception.file.FileDoesntExist;
+import com.example.turingemulator.exception.file.IncorrectFileData;
+import com.example.turingemulator.exception.lentCellOperation.IncorrectLentSymbolEnteredException;
+import com.example.turingemulator.exception.lentCellOperation.IndexOfLentHeaderOutOfBoundException;
 import com.example.turingemulator.exception.lentCellOperation.MinimumLentSizeException;
 import com.example.turingemulator.exception.operands.IncreaseMaxValueException;
 import com.example.turingemulator.exception.operands.NonDigitValuesException;
@@ -37,7 +41,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class MainController {
@@ -123,8 +126,9 @@ public class MainController {
         }
         if (existInRows) {
             lentData.getListLentData().set(columnIndex, newValue);
+        } else {
+            throw new LentInputException();
         }
-        throw new LentInputException();
     }
 
     public void commitRowConditionTableCell(
@@ -263,7 +267,7 @@ public class MainController {
         if (columnPicked == rowConditions.get(0).getEnderIndex() - 1) {
             throw new DeleteFinalColumnException();
         }
-        if (rowConditions.get(0).getEnderIndex() < 3) {
+        if (rowConditions.get(0).getEnderIndex() < 4) {
             throw new MinimumColumnSize();
         }
         for (RowCondition rowCondition :
@@ -356,8 +360,7 @@ public class MainController {
             int aValue = Integer.parseInt(aValueInputted);
             int bValue = Integer.parseInt(bValueInputted);
 
-            //TODO что-то сделать с масштабом
-            if (aValue <= 50 || bValue <= 50) {
+            if (aValue <= 13 && bValue <= 13) {
                 //заполнение ленты значением а
                 for (int i = 1; i < aValue + 1; i++) {
                     lentData.getListLentData().set(i, "1");
@@ -603,8 +606,8 @@ public class MainController {
     }
 
     public void isSaveStackTrace() {
-            lentStateCounter = 0;
-            Trace.getStringBuilder(currentLentState);
+        lentStateCounter = 0;
+        Trace.getStringBuilder(currentLentState);
     }
 
     public void showStackTrace() {
@@ -625,7 +628,10 @@ public class MainController {
         });
     }
 
-    public void formedStringPresenterOfRowCondition(File file){
+    public void formedStringPresenterOfRowCondition(File file) throws FileDoesntExist, IncorrectFileData {
+        if (file == null) {
+            throw new FileDoesntExist();
+        }
         StringBuilder algorithmFormation = new StringBuilder();
 
         for (RowCondition row :
@@ -645,18 +651,21 @@ public class MainController {
         }
         algorithmFormation.append(rowConditions.get(0).getEnderIndex());
 
+        fileProcessingService.saveAlgorithmData(algorithmFormation.toString(), file);
+    }
+
+    public void formedAndSavingLentData(File file) throws FileDoesntExist, IncorrectFileData {
         if (file != null) {
-            fileProcessingService.saveAlgorithmData(algorithmFormation.toString(), file);
+            fileProcessingService.saveLentData(file);
+        } else {
+            throw new FileDoesntExist();
         }
     }
 
-    public void formedAndSavingLentData(File file){
-        if (file != null) {
-            fileProcessingService.saveLentData( file);
+    public void readingAndAnalyzingFiles(File uploadFile) throws FileDoesntExist, IncorrectFileData {
+        if (uploadFile == null) {
+            throw new FileDoesntExist();
         }
-    }
-
-    public void readingAndAnalyzingFiles(File uploadFile){
         String fileSTR = null;
         try {
             fileSTR = fileProcessingService.readUsingFiles(uploadFile);
@@ -697,14 +706,14 @@ public class MainController {
         }
 
         if (!existInRows) {
-           throw new IncorrectLentSymbolEnteredException();
+            throw new IncorrectLentSymbolEnteredException();
         } else {
             int column = view.lentTable.getFocusModel().getFocusedCell().getColumn();
             lentData.getListLentData().set(column, newValue);
         }
     }
 
-    public void showProgramInfo(){
+    public void showProgramInfo() {
         myLaunch(programInfo);
     }
 

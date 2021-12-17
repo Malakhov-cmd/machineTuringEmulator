@@ -25,7 +25,7 @@ import java.util.ResourceBundle;
 
 public class Trace extends Application implements Initializable {
     public TextArea stackTraceTextArea;
-    public Button clearTrace;
+
     public Button saveTrace;
 
     private static StringBuilder stringBuilder = new StringBuilder();
@@ -105,9 +105,6 @@ public class Trace extends Application implements Initializable {
         tempSTR = stackTraceTextArea.getText();
         startDraw();
 
-        clearTrace.setOnAction(event -> {
-            stringBuilder.setLength(0);
-        });
 
         saveTrace.setOnAction(event -> {
             FileChooser fileChooser = new FileChooser();
