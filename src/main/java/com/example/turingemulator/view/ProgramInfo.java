@@ -37,7 +37,7 @@ public class ProgramInfo extends Application implements Initializable {
 
         Scene scene = new Scene(root);
         stage.getIcons().add(new Image("/icon.png"));
-        stage.setTitle("Информация о создателях");
+        stage.setTitle("Информация о программистах");
         stage.setScene(scene);
         stage.setResizable(false);
 

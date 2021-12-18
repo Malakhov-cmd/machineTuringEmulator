@@ -16,6 +16,7 @@ import com.example.turingemulator.exception.addRow.AddingIncorrectSymbolExceptio
 import com.example.turingemulator.exception.addRow.AlreadyBeingInSymbolsList;
 import com.example.turingemulator.exception.analizator.EmptyInitialRuleException;
 import com.example.turingemulator.exception.analizator.EmptyLentDataException;
+import com.example.turingemulator.exception.analizator.IncorrectLEntConditionException;
 import com.example.turingemulator.exception.analizator.NoOneReferendToFinalStateException;
 import com.example.turingemulator.exception.deleteColumn.DeleteFinalColumnException;
 import com.example.turingemulator.exception.deleteColumn.MinimumColumnSize;
@@ -60,6 +61,9 @@ public class MainController {
     private Trace trace = new Trace();
     private ProgramInfo programInfo = new ProgramInfo();
     private SystemInfo systemInfo = new SystemInfo();
+
+    private int aValue;
+    private int bValue;
 
     private ContextMenuService contextMenuService = new ContextMenuService();
     private AnalizatorService analizatorService = new AnalizatorService(this);
@@ -112,6 +116,22 @@ public class MainController {
 
     public void setTrace(Trace trace) {
         this.trace = trace;
+    }
+
+    public int getaValue() {
+        return aValue;
+    }
+
+    public void setaValue(int aValue) {
+        this.aValue = aValue;
+    }
+
+    public int getbValue() {
+        return bValue;
+    }
+
+    public void setbValue(int bValue) {
+        this.bValue = bValue;
     }
 
     public void commitLentTableCell(String newValue, int columnIndex) throws LentInputException {
@@ -360,6 +380,9 @@ public class MainController {
             int aValue = Integer.parseInt(aValueInputted);
             int bValue = Integer.parseInt(bValueInputted);
 
+            this.aValue = aValue;
+            this.bValue = bValue;
+
             if (aValue <= 13 && bValue <= 13) {
                 //заполнение ленты значением а
                 for (int i = 1; i < aValue + 1; i++) {
@@ -419,7 +442,7 @@ public class MainController {
     }
 
     /*AlgorithmExecuting*/
-    public void startAlgorithm(boolean checkerOn) {
+    public void startAlgorithm(boolean checkerOn) throws IncreaseMaxValueException, NonDigitValuesException {
         //сигнал для отображения Trace
         algorithmStarted = true;
 
@@ -451,6 +474,17 @@ public class MainController {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "На ленте установленые значения по умолчанию." +
                         "\n Пожалуйста. установите значение операндов.");
                 alert.showAndWait();
+            } catch (IncorrectLEntConditionException e) {
+                currentPosition.setCurrentLentColumn(0);
+                currentPosition.setCurrentRowCondition(0);
+                currentPosition.setCurrentColumnCondition(1);
+
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Не верное исходное состояние ленты. \n" +
+                        "После операндов присутсвуют символы");
+                alert.showAndWait();
+
+                clearLent();
+                applyOperandWay(String.valueOf(aValue), String.valueOf(bValue));
             }
         } else {
             defaultStart();

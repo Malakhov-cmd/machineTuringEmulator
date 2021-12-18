@@ -564,10 +564,16 @@ public class MainView extends Application implements Initializable {
             } catch (IncreaseMaxValueException e) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "Максимальное значение операнда составляет 13");
                 alert.showAndWait();
+                aValueInputted.setText("13");
+                bValueInputted.setText("13");
+                applyValuesOperands.fire();
             } catch (NonDigitValuesException e) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "Введите корректные значение операндов -" +
-                        "\n целые числа");
+                        "\n натуральные числа");
                 alert.showAndWait();
+                aValueInputted.setText("13");
+                bValueInputted.setText("13");
+                applyValuesOperands.fire();
             }
 
             currentLentTable.filler(controller.getLentData());
@@ -624,7 +630,24 @@ public class MainView extends Application implements Initializable {
         });
 
         start.setOnAction(event -> {
-            controller.startAlgorithm(checkerOn.isSelected());
+            try {
+                controller.startAlgorithm(checkerOn.isSelected());
+            } catch (IncreaseMaxValueException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Максимальное значение операнда составляет 13");
+                alert.showAndWait();
+                aValueInputted.setText("13");
+                bValueInputted.setText("13");
+                applyValuesOperands.fire();
+            } catch (NonDigitValuesException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Введите корректные значение операндов -" +
+                        "\n натуральные числа");
+                alert.showAndWait();
+                aValueInputted.setText("13");
+                bValueInputted.setText("13");
+                applyValuesOperands.fire();
+            }
+            currentLentTable.filler(controller.getLentData());
+            currentLentTable.update();
         });
 
         stepForward.setOnAction(event -> {
@@ -872,14 +895,14 @@ public class MainView extends Application implements Initializable {
 
         addTextMenuItem.setOnAction(event -> {
             //проверка превышения максимального лимита - 200
-                try {
-                    controller.addLentItemViaContextMenu();
-                } catch (IndexOfLentHeaderOutOfBoundException e) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR, "Максимальный размер длины ленты - 200");
-                    alert.showAndWait();
-                }
-                currentLentTable.filler(controller.getLentData());
-                currentLentTable.update();
+            try {
+                controller.addLentItemViaContextMenu();
+            } catch (IndexOfLentHeaderOutOfBoundException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Максимальный размер длины ленты - 200");
+                alert.showAndWait();
+            }
+            currentLentTable.filler(controller.getLentData());
+            currentLentTable.update();
 
         });
 
