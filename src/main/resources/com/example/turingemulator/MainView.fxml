@@ -59,7 +59,7 @@
                     <Insets left="17.0" top="15.0" />
                 </padding>
             </Label>
-            <ScrollPane fitToHeight="true" prefHeight="63.0" prefWidth="468.0">
+            <ScrollPane fx:id="lentScroll" fitToHeight="true" prefHeight="63.0" prefWidth="468.0">
                 <TableView fx:id="lentTable" editable="true" minHeight="48" prefWidth="6030.0">
                     <columns>
 
@@ -74,7 +74,7 @@
     <HBox GridPane.RowSpan="1" GridPane.columnIndex="0" GridPane.columnSpan="7" GridPane.rowIndex="2">
         <VBox prefHeight="272.0" prefWidth="628.0">
             <Label alignment="CENTER" prefHeight="38.0" prefWidth="118.0">Карта состояний</Label>
-            <ScrollPane fitToHeight="true">
+            <ScrollPane fx:id="scrollAlgorithm" fitToHeight="true">
                 <TableView fx:id="mapConditionTable" editable="true" prefHeight="160.0" prefWidth="1164.0">
                     <columns>
                     </columns>

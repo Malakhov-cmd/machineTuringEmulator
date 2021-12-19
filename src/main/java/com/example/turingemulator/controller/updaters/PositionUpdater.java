@@ -1,11 +1,11 @@
 package com.example.turingemulator.controller.updaters;
 
 public class PositionUpdater {
-    int currentLentColumn;
-    int currentRowCondition;
-    int currentColumnCondition;
+    volatile int currentLentColumn;
+    volatile int currentRowCondition;
+    volatile int currentColumnCondition;
 
-    boolean isFinished;
+    volatile boolean isFinished;
 
     public PositionUpdater(int currentLentColumn, int currentRowCondition, int currentColumnCondition) {
         this.currentLentColumn = currentLentColumn;

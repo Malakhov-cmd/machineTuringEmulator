@@ -52,6 +52,8 @@ public class MainView extends Application implements Initializable {
     public TableView lentTable;
     public TableView mapConditionTable;
 
+    public ScrollPane lentScroll;
+    public ScrollPane scrollAlgorithm;
     /*Режим ввода*/
     //переключатели режима ввода
     public RadioButton onTheLineInput;
@@ -178,6 +180,8 @@ public class MainView extends Application implements Initializable {
         lentHandler();
         algorithmHandler();
         addColumnFromRightSide();
+        scrollLentHandler();
+        scrollAlgorithmHandler();
     }
 
     private void lentHandler() {
@@ -219,6 +223,59 @@ public class MainView extends Application implements Initializable {
                 listConditionsColumns) {
             column.setOnEditCommit(cellEditEventEventHandlerRules);
         }
+    }
+
+    public void scrollLentHandler(){
+        Runnable run = () -> {
+           while(true){
+               int oldLentState = currentPosition.getCurrentLentColumn();
+               float scrollHValue = (float) (oldLentState/200.0);
+               lentScroll.setHvalue(scrollHValue);
+               try {
+                   Thread.sleep(150);
+               } catch (InterruptedException e) {
+                   e.printStackTrace();
+               }
+               while (oldLentState == currentPosition.getCurrentLentColumn()){
+                   try {
+                       Thread.sleep(150);
+                   } catch (InterruptedException e) {
+                       e.printStackTrace();
+                   }
+               }
+           }
+        };
+        Thread updateLentCaret = new Thread(run);
+        updateLentCaret.start();
+    }
+
+    public void scrollAlgorithmHandler(){
+        Runnable run = () -> {
+                while (true){
+                    int oldAlgorithmStateColumn = currentPosition.getCurrentColumnCondition();
+                    if (oldAlgorithmStateColumn > 7) {
+                        float scrollHValue = (float) (oldAlgorithmStateColumn / 20.0);
+                        scrollAlgorithm.setHvalue(scrollHValue);
+                        try {
+                            Thread.sleep(150);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        if (currentPosition.isFinished()){
+                            scrollAlgorithm.setHvalue(0);
+                        }
+                        while(oldAlgorithmStateColumn == currentPosition.getCurrentColumnCondition()){
+                            try {
+                                Thread.sleep(150);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+        };
+        Thread updateConditionTableScrolling = new Thread(run);
+        updateConditionTableScrolling.start();
     }
 
     private void initLentTableGraphical() {
