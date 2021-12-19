@@ -12,7 +12,27 @@
 "><label data-v-6d20f2b0="" style="
     text-align: center;
 ">Руководство пользователя</label>
-    <p style="
+    <div id="infoMenu" style="
+    margin-top: 35px;
+    margin-bottom: 45px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-wrap: nowrap;
+    align-content: space-between;
+">
+        <p style="margin-bottom: 25px">МЕНЮ</p>
+        <a href="#workWithFile" style="color: black; margin-bottom: 7px">Работа с файлом</a>
+        <a href="" style="color: black; margin-bottom: 7px"> ???</a>
+        <a href="#workingWithProgram" style="color: black; margin-bottom: 7px"> Работа с программой</a>
+        <a href="#typeOfWorking" style="color: black; margin-bottom: 7px">Режим работы</a>
+        <a href="#startProgram" style="color: black; margin-bottom: 7px">Запуск программы</a>
+        <a href="#workingWithStackTrace" style="color: black; margin-bottom: 7px">Работа с трассой</a>
+        <a href="#refactorCellAlgorithm" style="color: black; margin-bottom: 7px"> Редактирование ячейки алгоритма</a>
+        <a href="#refactorCellLent" style="color: black; margin-bottom: 7px">Редактирование ячейки ленты</a>
+    </div>
+    <p id="workWithFile"
+       style="
     margin-left: 45px;
     font-style: italic;
 ">Работа с файлом</p>
@@ -34,7 +54,8 @@
     margin-bottom: 35px;
 "/>
     <p style="align-self: center;">Рисунок 1 - открытие встроенного алгоритма</p>
-    <p style="
+    <p
+            style="
     margin-left: 45px;
     font-style: italic;
 ">Работа с операндами</p>
@@ -49,12 +70,14 @@
     margin-bottom: 35px;
 ">
     <p style="align-self: center;">Рисунок 2 - открытие вкладки 'О программе'</p>
-    <p style="
+    <p id="workingWithProgram"
+       style="
     align-self: center;
     margin-left: 45px;
     font-style: italic;
 ">Работа с программой</p>
-    <p style="
+    <p id="workingWithOperands"
+       style="
     margin-left: 45px;
     font-style: italic;
 ">Работа с операндами</p>
@@ -80,7 +103,8 @@
     margin-bottom: 35px;
 ">
     <p style="align-self: center;">Рисунок 4 - использование режима ввода операндов на ленте</p>
-    <p style="
+    <p id="typeOfWorking"
+       style="
     margin-left: 45px;
     font-style: italic;
 ">Режим работы</p>
@@ -89,7 +113,8 @@
         'Пошаговый', 'Автоматический' или 'Только результат'. При выборе автоматического
         режима нужно указать время задержки программы, при остальных режимах работы эта
         функция заблокирована.</p>
-    <p style="
+    <p id="startProgram"
+       style="
     margin-left: 45px;
     font-style: italic;
 ">Запуск программы</p>
@@ -106,10 +131,11 @@
     margin-bottom: 35px;
 ">
     <p style="align-self: center;">Рисунок 5 - пример использования программы в пошаговом режиме</p>
-    <p style="
+    <p id="workingWithStackTrace"
+       style="
     margin-left: 45px;
     font-style: italic;
-">работа с трассой</p>
+">Работа с трассой</p>
     <p style="text-align: justify; text-indent: 45px;">
         Чтобы сохранить трассу в файл нужно установить флажок
         рядом с надписью 'Сохранять трассу'. При окончании выполния алгоритма
@@ -125,7 +151,8 @@
     margin-bottom: 35px;
 ">
     <p style="align-self: center;">Рисунок 6 - пример отображения трассы в процессе выполнения алгоритма</p>
-    <p style="
+    <p id="refactorCellAlgorithm"
+       style="
     margin-left: 45px;
     font-style: italic;
 ">Редактирование ячейки алгоритма</p>
@@ -144,7 +171,8 @@
     margin-bottom: 35px;
 ">
     <p style="align-self: center;">Рисунок 7 - пример использования возможности добавления/удаления строки</p>
-    <p style="
+    <p id="refactorCellLent"
+       style="
     margin-left: 45px;
     font-style: italic;
 ">Редактирование ячейки ленты</p>
