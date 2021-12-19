@@ -137,6 +137,7 @@ public class MainView extends Application implements Initializable {
     private MainController controller;
 
     public double delay = 0.15;
+    public boolean isBaseAlgorithm = false;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -774,6 +775,9 @@ public class MainView extends Application implements Initializable {
 
             controller.plusDataInit();
 
+            isBaseAlgorithm = true;
+            mapConditionTable.setEditable(false);
+
             currentRuleTable.filler(controller.getRowConditions());
             currentRuleTable.update();
         });
@@ -786,6 +790,9 @@ public class MainView extends Application implements Initializable {
             }
 
             controller.multyDataInit();
+
+            isBaseAlgorithm = true;
+            mapConditionTable.setEditable(false);
 
             currentRuleTable.filler(controller.getRowConditions());
             currentRuleTable.update();
@@ -818,6 +825,8 @@ public class MainView extends Application implements Initializable {
 
         newFileAlgorithmMenu.setOnAction(event -> {
             fullUncolorized();
+            isBaseAlgorithm = false;
+            mapConditionTable.setEditable(true);
 
             int endedPoint = controller.getRowConditions().get(0).getEnderIndex();
             while (endedPoint != 2) {
