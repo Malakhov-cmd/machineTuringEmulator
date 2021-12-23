@@ -6,23 +6,23 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="400.0" fx:controller="com.example.turingemulator.view.ProgramInfo" prefWidth="604.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane prefHeight="457.0" prefWidth="610.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.turingemulator.view.ProgramInfo">
    <children>
-       <Label alignment="CENTER" layoutX="191.0" layoutY="14.0" prefHeight="35.0" prefWidth="237.0" text="О разработчиках" textAlignment="CENTER">
+       <Label alignment="CENTER" layoutX="191.0" layoutY="14.0" prefHeight="35.0" prefWidth="237.0" text="Информация о разработчиках" textAlignment="CENTER">
            <font>
                <Font name="Book Antiqua Italic" size="15.0" />
            </font>
        </Label>
-      <Label alignment="TOP_LEFT" layoutX="79.0" layoutY="87.0" prefHeight="25.0" prefWidth="266.0" text="Самарский государственный университет" wrapText="true" />
-      <Label alignment="TOP_LEFT" layoutX="79.0" layoutY="113.0" prefHeight="25.0" prefWidth="266.0" text="Моделирование машины Тьюринга" wrapText="true" />
-      <Label alignment="TOP_LEFT" layoutX="79.0" layoutY="138.0" prefHeight="25.0" prefWidth="266.0" text="Преподаватель: Зеленко Лариса Сергеевна" wrapText="true" />
-      <Label alignment="TOP_LEFT" layoutX="79.0" layoutY="163.0" prefHeight="25.0" prefWidth="496.0" text="ФИО разработчиков: Малахов Георгий Сергеевич, Вашуркина Вероника Александровна" wrapText="true" />
-      <Label alignment="TOP_LEFT" layoutX="79.0" layoutY="188.0" prefHeight="25.0" prefWidth="496.0" text="Группа: 6402-090301D" wrapText="true" />
-      <Label alignment="TOP_LEFT" layoutX="79.0" layoutY="229.0" prefHeight="25.0" prefWidth="496.0" text="Версия: 1.0" wrapText="true" />
-      <Label alignment="TOP_LEFT" layoutX="79.0" layoutY="254.0" prefHeight="25.0" prefWidth="496.0" text="Все права защищены, при использовании в коммерческих целях требуется ссылка на " wrapText="true" />
-      <Label alignment="TOP_LEFT" layoutX="79.0" layoutY="272.0" prefHeight="25.0" prefWidth="496.0" text="источник." wrapText="true" />
-      <Button fx:id="closeBtn" layoutX="526.0" layoutY="318.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="43.0" text="Ok" />
-      <Line endX="503.75732421875" endY="3.0517578125E-5" layoutX="102.0" layoutY="360.0" startX="-100.0" strokeWidth="6.0">
+      <Label alignment="TOP_LEFT" layoutX="79.0" layoutY="87.0" prefHeight="25.0" prefWidth="266.0" text="Лабораторный практикум по дисциплине:" wrapText="true" />
+      <Label alignment="TOP_LEFT" layoutX="79.0" layoutY="113.0" prefHeight="25.0" prefWidth="266.0" text="&quot; Технологии программирования &quot;" wrapText="true" />
+      <Label alignment="TOP_LEFT" layoutX="79.0" layoutY="138.0" prefHeight="25.0" prefWidth="428.0" text="Тема: &quot;Система моделирования вычислительной машины Тьюринга&quot;" wrapText="true" />
+      <Label alignment="TOP_LEFT" layoutX="78.0" layoutY="194.0" prefHeight="25.0" prefWidth="496.0" text="Разработчики:" wrapText="true" />
+      <Label alignment="TOP_LEFT" layoutX="78.0" layoutY="220.0" prefHeight="25.0" prefWidth="496.0" text="Студенты группы 6402-090301D:" wrapText="true" />
+      <Label alignment="TOP_LEFT" layoutX="97.0" layoutY="245.0" prefHeight="25.0" prefWidth="496.0" text="Малахов Георгий" wrapText="true" />
+      <Label alignment="TOP_LEFT" layoutX="78.0" layoutY="295.0" prefHeight="25.0" prefWidth="496.0" text="Руководитель:" wrapText="true" />
+      <Label alignment="TOP_LEFT" layoutX="97.0" layoutY="270.0" prefHeight="25.0" prefWidth="496.0" text="Вашуркина Вероника" wrapText="true" />
+      <Button fx:id="closeBtn" layoutX="530.0" layoutY="359.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="43.0" text="Ok" />
+      <Line endX="503.75732421875" endY="3.0517578125E-5" layoutX="107.0" layoutY="405.0" startX="-100.0" strokeWidth="6.0">
          <fill>
             <LinearGradient endX="1.0" endY="1.0">
                <stops>
@@ -40,5 +40,7 @@
             </LinearGradient>
          </fill>
       </Line>
+      <Label layoutX="97.0" layoutY="320.0" prefHeight="17.0" prefWidth="196.0" text="Зеленко Лариса Сергеевна" />
+      <Label layoutX="131.0" layoutY="341.0" text="Самарский университет 2021" />
    </children>
 </AnchorPane>

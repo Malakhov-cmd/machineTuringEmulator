@@ -5,8 +5,6 @@
 <?import javafx.scene.shape.*?>
 
 <AnchorPane prefHeight="459.0" prefWidth="751.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.turingemulator.view.Trace">
-    <Circle fill="DODGERBLUE" layoutX="651.0" layoutY="380.0" radius="100.0" stroke="BLACK" strokeType="INSIDE" />
-    <Circle fill="DODGERBLUE" layoutX="55.0" layoutY="411.0" radius="77.0" stroke="BLACK" strokeType="INSIDE" />
     <TextArea fx:id="stackTraceTextArea" layoutX="24.0" layoutY="45.0" prefHeight="335.0" prefWidth="697.0" />
     <Button fx:id="saveTrace" layoutX="333.0" layoutY="419.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="80.0" text="Сохранить" />
     <Label layoutX="24.0" layoutY="14.0" prefHeight="17.0" prefWidth="123.0" text="Трасса вычислений" />

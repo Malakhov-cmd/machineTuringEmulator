@@ -557,27 +557,32 @@ public class MainView extends Application implements Initializable {
         });
 
         editCellTextMenuItem.setOnAction(event -> {
-            int columnPicked = mapConditionTable.getFocusModel().getFocusedCell().getColumn() - 1;
-            int rowPicked = mapConditionTable.getFocusModel().getFocusedCell().getRow();
+            if (!isBaseAlgorithm) {
+                int columnPicked = mapConditionTable.getFocusModel().getFocusedCell().getColumn() - 1;
+                int rowPicked = mapConditionTable.getFocusModel().getFocusedCell().getRow();
 
-            TextInputDialog dialog = new TextInputDialog();
-            dialog.setHeaderText("Изменение правила");
-            dialog.showAndWait().ifPresentOrElse(
-                    result -> {
-                        try {
-                            controller.editRule(result, columnPicked, rowPicked);
+                TextInputDialog dialog = new TextInputDialog();
+                dialog.setHeaderText("Изменение правила");
+                dialog.showAndWait().ifPresentOrElse(
+                        result -> {
+                            try {
+                                controller.editRule(result, columnPicked, rowPicked);
 
-                            currentRuleTable.filler(controller.getRowConditions());
-                            currentRuleTable.update();
-                        } catch (RowConditionCellException e) {
-                            Alert alert = new Alert(Alert.AlertType.ERROR, "Неверный формат ввода правил");
-                            alert.showAndWait();
-                        } catch (EditFinalStateException e) {
-                            Alert alert = new Alert(Alert.AlertType.ERROR, "Изменение последнего столбца недопустимо");
-                            alert.showAndWait();
-                        }
-                    },
-                    () -> System.err.println("System error"));
+                                currentRuleTable.filler(controller.getRowConditions());
+                                currentRuleTable.update();
+                            } catch (RowConditionCellException e) {
+                                Alert alert = new Alert(Alert.AlertType.ERROR, "Неверный формат ввода правил");
+                                alert.showAndWait();
+                            } catch (EditFinalStateException e) {
+                                Alert alert = new Alert(Alert.AlertType.ERROR, "Изменение последнего столбца недопустимо");
+                                alert.showAndWait();
+                            }
+                        },
+                        () -> System.err.println("System error"));
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Встроенные алгоритмы нельзя изменять");
+                alert.showAndWait();
+            }
         });
 
         clearCellTextMenuItem.setOnAction(event -> {
