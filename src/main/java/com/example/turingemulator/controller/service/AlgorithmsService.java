@@ -21,8 +21,6 @@ public class AlgorithmsService {
 
     private Task<Void> task;
 
-    //TODO поправить отображения ленты и ?updateMessage in Trace?
-
     public AlgorithmsService(MainController mainController, MainView mainView) {
         this.mainController = mainController;
         this.mainView = mainView;
@@ -106,29 +104,7 @@ public class AlgorithmsService {
             } else {
                 //проверка на неоткрытые состояния
                 if (newConditionInt > mainController.getRowConditions().get(0).getEnderIndex() ) {
-                    //TODO мб оставить без минус 1 ВНИМАНИЕ БЫЛО if (newConditionInt - 1 > mainController.getRowConditions().get(0).getEnderIndex() - 1)
-                /*if (newConditionInt - 1 == mainController.getRowConditions().get(0).getEnderIndex() - 1) {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "Алгоритм успешно завершен");
-                    alert.showAndWait();
-
-                    mainController.getCurrentPosition().setCurrentLentColumn(0);
-                    mainController.getCurrentPosition().setCurrentRowCondition(0);
-                    mainController.getCurrentPosition().setCurrentColumnCondition(1);
-                    mainController.getCurrentPosition().setFinished(true);
-
-                    if (mainView.saveStackTraceCheckBox.isSelected()) {
-                        Date date = new Date();
-                        mainController.currentLentState.append(mainController.lentStateCounter).append(" Алгоритм успешно завершен в ").append(date).append("\n");
-                        Trace.getStringBuilder(mainController.currentLentState);
-
-                        mainController.lentStateCounter = 0;
-                        //Конец процесса
-                        Trace.getEnded(true);
-                    }
-
-                } else {*/
                     error = true;
-
 
                     if (mainView.saveStackTraceCheckBox.isSelected()) {
                         Date date = new Date();
@@ -301,7 +277,7 @@ public class AlgorithmsService {
     }
 
     private int getParseResult() {
-        int counter = 0;
+        int counter;
         List<String> lentData = mainController.getLentData().getListLentData();
         for (int i = 0; i < lentData.size(); i++) {
             if (lentData.get(i).equals("=")){

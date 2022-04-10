@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.ResourceBundle;
 
 public class MainView extends Application implements Initializable {
@@ -139,6 +140,10 @@ public class MainView extends Application implements Initializable {
     public double delay = 0.15;
     public boolean isBaseAlgorithm = false;
 
+    public static void main(String[] args) {
+        launch(args);
+    }
+
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(MainView.class.getResource("MainView.fxml"));
@@ -152,10 +157,6 @@ public class MainView extends Application implements Initializable {
         stage.setTitle("Машина Тьюринга");
         stage.setResizable(false);
         stage.show();
-    }
-
-    public static void main(String[] args) {
-        launch();
     }
 
     @Override
@@ -226,54 +227,54 @@ public class MainView extends Application implements Initializable {
         }
     }
 
-    public void scrollLentHandler(){
+    public void scrollLentHandler() {
         Runnable run = () -> {
-           while(true){
-               int oldLentState = currentPosition.getCurrentLentColumn();
-               float scrollHValue = (float) (oldLentState/200.0);
-               lentScroll.setHvalue(scrollHValue);
-               try {
-                   Thread.sleep(150);
-               } catch (InterruptedException e) {
-                   e.printStackTrace();
-               }
-               while (oldLentState == currentPosition.getCurrentLentColumn()){
-                   try {
-                       Thread.sleep(150);
-                   } catch (InterruptedException e) {
-                       e.printStackTrace();
-                   }
-               }
-           }
+            while (true) {
+                int oldLentState = currentPosition.getCurrentLentColumn();
+                float scrollHValue = (float) (oldLentState / 200.0);
+                lentScroll.setHvalue(scrollHValue);
+                try {
+                    Thread.sleep(150);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                while (oldLentState == currentPosition.getCurrentLentColumn()) {
+                    try {
+                        Thread.sleep(150);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         };
         Thread updateLentCaret = new Thread(run);
         updateLentCaret.start();
     }
 
-    public void scrollAlgorithmHandler(){
+    public void scrollAlgorithmHandler() {
         Runnable run = () -> {
-                while (true){
-                    int oldAlgorithmStateColumn = currentPosition.getCurrentColumnCondition();
-                    if (oldAlgorithmStateColumn > 7) {
-                        float scrollHValue = (float) (oldAlgorithmStateColumn / 20.0);
-                        scrollAlgorithm.setHvalue(scrollHValue);
+            while (true) {
+                int oldAlgorithmStateColumn = currentPosition.getCurrentColumnCondition();
+                if (oldAlgorithmStateColumn > 7) {
+                    float scrollHValue = (float) (oldAlgorithmStateColumn / 20.0);
+                    scrollAlgorithm.setHvalue(scrollHValue);
+                    try {
+                        Thread.sleep(150);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    if (currentPosition.isFinished()) {
+                        scrollAlgorithm.setHvalue(0);
+                    }
+                    while (oldAlgorithmStateColumn == currentPosition.getCurrentColumnCondition()) {
                         try {
                             Thread.sleep(150);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                        if (currentPosition.isFinished()){
-                            scrollAlgorithm.setHvalue(0);
-                        }
-                        while(oldAlgorithmStateColumn == currentPosition.getCurrentColumnCondition()){
-                            try {
-                                Thread.sleep(150);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
                     }
                 }
+            }
         };
         Thread updateConditionTableScrolling = new Thread(run);
         updateConditionTableScrolling.start();
